@@ -47,6 +47,8 @@ States = {
     'blink':      5,
     'reverse':    7,
     'hidden':     8,
+    # customized
+    'light':      1,
     }
 
 Foregrounds = {
@@ -58,6 +60,8 @@ Foregrounds = {
     'magenta':   35,
     'cyan':      36,
     'white':     37,
+    # customized
+    'purple':    35,
     }
 
 Backgrounds = {
@@ -69,6 +73,8 @@ Backgrounds = {
     'magenta':   45,
     'cyan':      46,
     'white':     47,
+    # customized
+    'purple':    45,
     }
 
 
