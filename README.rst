@@ -1,6 +1,6 @@
-=====================
-VT100 Print Functions
-=====================
+===================================
+Color Print - VT100 Print Functions
+===================================
 
 This is a module which provides print functions with color defined in 
 `VT100 Display Attributes`_ .
