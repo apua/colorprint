@@ -39,7 +39,7 @@ state - foreground - background
 """
 
 
-States = {
+state = {
     'reset':      0,
     'bright':     1,
     'dim':        2,
@@ -51,7 +51,7 @@ States = {
     'light':      1,
     }
 
-Foregrounds = {
+foreground = {
     'black':     30,
     'red':       31,
     'green':     32,
@@ -64,7 +64,7 @@ Foregrounds = {
     'purple':    35,
     }
 
-Backgrounds = {
+background = {
     'black':     40,
     'red':       41,
     'green':     42,
@@ -78,43 +78,46 @@ Backgrounds = {
     }
 
 
-__all__ = tuple(Foregrounds) + tuple(States)
+__all__ = tuple(foreground) + tuple(state)
 
 
 def gen_print(*, state=0, foreground=37, background=40):
+    """
+    Generate a colorful print function with given spec values.
+    """
     template = '\x1b[{state};{foreground};{background}m{}\x1b[m'
     coloring = lambda obj, loc=locals(): template.format(obj, **loc)
     return (lambda *args, **kwargs: print(*map(coloring, args), **kwargs))
 
 
-def spec2fcns(settings, spec, pos):
+def gen_fcns(settings=None):
+    """
+    Generate functions and their sub-functions recursively.
+    {spec: value} -> {name: fcn}
+    """
+
+    def update_fcns(spec):
+        """
+        According to `spec`, update the `fcns` dict.
+        """
+        for name, value in globals()[spec].items():
+            fcns[name] = lambda: None
+            subfcns = gen_fcns(dict(settings.items()|{(spec, value)}))
+            vars(fcns[name]).update(subfcns)
+
+    fcns = {}
     if settings is None:
         settings = {}
-    fcns = {}
-    for func_name, value in spec.items():
-        fcns[func_name] = lambda: None
-        vars(fcns[func_name]).update(gen_fcns(
-            dict(settings.items()|{pos: value}.items())
-            ))
-    return fcns
-
-
-def gen_fcns(settings=None) -> 'sub fcns :: (name, lambda)':
-    fcns = {}
-    if settings==None:
-        # choose function name in States then set 'state'
-        # and, in Foregrounds then set 'foreground'
-        # to `gen_fcns` and `gen_fcns` should return fcns
-        fcns.update(spec2fcns(settings, States, 'state'))
-        fcns.update(spec2fcns(settings, Foregrounds, 'foreground'))
+        update_fcns('state')
+        update_fcns('foreground')
     else:
         fcns['print'] = gen_print(**settings)
         if 'state' not in settings:
-            fcns.update(spec2fcns(settings, States, 'state'))
+            update_fcns('state')
         if 'foreground' not in settings:
-            fcns.update(spec2fcns(settings, Foregrounds, 'foreground'))
+            update_fcns('foreground')
         if 'background' not in settings and 'foreground' in settings:
-            fcns.update(spec2fcns(settings, Backgrounds, 'background'))
+            update_fcns('background')
     return fcns
 
     
@@ -123,11 +126,11 @@ vars().update(gen_fcns())
 
 if __name__=='__main__':
 
-    for k in States:
+    for k in state:
         vars()[k].print('{:20}'.format(k), *range(10))
-    for k in Foregrounds:
+    for k in foreground:
         vars(bright)[k].print('{:20}'.format(k), *range(10))
-    for k in Backgrounds:
+    for k in background:
         vars(bright.white)[k].print('{:20}'.format(k), *range(10))
 
     print()
