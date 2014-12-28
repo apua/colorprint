@@ -81,7 +81,7 @@ def gen_print(*, state=0, foreground=37, background=40):
     return (lambda *args, **kwargs: print(*map(coloring, args), **kwargs))
 
 
-def gen_fcns(settings=None) -> "sub fcns :: (name, lambda)":
+def gen_fcns(settings=None) -> 'sub fcns :: (name, lambda)':
     fcns = {}
     if settings==None:
         # choose function name in States then set 'state'
