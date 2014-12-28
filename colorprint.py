@@ -101,9 +101,10 @@ def gen_fcns(settings=None):
         According to `spec`, update the `fcns` dict.
         """
         for name, value in globals()[spec].items():
-            fcns[name] = lambda: None
+            newfcn = lambda: None
             subfcns = gen_fcns(dict(settings.items()|{(spec, value)}))
-            vars(fcns[name]).update(subfcns)
+            vars(newfcn).update(subfcns)
+            fcns[name] = newfcn
 
     fcns = {}
     if settings is None:
@@ -120,7 +121,7 @@ def gen_fcns(settings=None):
             update_fcns('background')
     return fcns
 
-    
+
 vars().update(gen_fcns())
 
 
