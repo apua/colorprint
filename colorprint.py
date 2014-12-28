@@ -87,41 +87,35 @@ def gen_print(*, state=0, foreground=37, background=40):
     return (lambda *args, **kwargs: print(*map(coloring, args), **kwargs))
 
 
+def spec2fcns(settings, spec, pos):
+    if settings is None:
+        settings = {}
+    fcns = {}
+    for func_name, value in spec.items():
+        fcns[func_name] = lambda: None
+        vars(fcns[func_name]).update(gen_fcns(
+            dict(settings.items()|{pos: value}.items())
+            ))
+    return fcns
+
+
 def gen_fcns(settings=None) -> 'sub fcns :: (name, lambda)':
     fcns = {}
     if settings==None:
         # choose function name in States then set 'state'
-        # and, in Foreground then set 'foreground'
+        # and, in Foregrounds then set 'foreground'
         # to `gen_fcns` and `gen_fcns` should return fcns
-        for func_name, value in States.items():
-            fcns[func_name] = lambda: None
-            vars(fcns[func_name]).update(gen_fcns({'state': value}))
-        for func_name, value in Foregrounds.items():
-            fcns[func_name] = lambda: None
-            vars(fcns[func_name]).update(gen_fcns({'foreground': value}))
-        return fcns
+        fcns.update(spec2fcns(settings, States, 'state'))
+        fcns.update(spec2fcns(settings, Foregrounds, 'foreground'))
     else:
-        if 'state' not in settings:
-            for func_name, value in States.items():
-                fcns[func_name] = lambda: None
-                vars(fcns[func_name]).update(gen_fcns(
-                   dict(settings.items()|{'state': value}.items())
-                   ))
-        if 'foreground' not in settings:
-            for func_name, value in Foregrounds.items():
-                fcns[func_name] = lambda: None
-                vars(fcns[func_name]).update(gen_fcns(
-                    dict(settings.items()|{'foreground': value}.items())
-                    ))
-        if 'background' not in settings \
-           and 'foreground' in settings:
-            for func_name, value in Backgrounds.items():
-                fcns[func_name] = lambda: None
-                vars(fcns[func_name]).update(gen_fcns(
-                    dict(settings.items()|{'background': value}.items())
-                    ))
         fcns['print'] = gen_print(**settings)
-        return fcns
+        if 'state' not in settings:
+            fcns.update(spec2fcns(settings, States, 'state'))
+        if 'foreground' not in settings:
+            fcns.update(spec2fcns(settings, Foregrounds, 'foreground'))
+        if 'background' not in settings and 'foreground' in settings:
+            fcns.update(spec2fcns(settings, Backgrounds, 'background'))
+    return fcns
 
     
 vars().update(gen_fcns())
