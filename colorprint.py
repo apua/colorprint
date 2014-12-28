@@ -2,26 +2,39 @@
 
 
 """
-Execute ``python3.4 -m doctest colorprint.py`` to get colorful output testing.
+Usage::
+    from colorprint import *
+
+Execute ``python3.4 -m colorprint`` to get colorful output testing.
 
 >>> gen_print(state=1, foreground=38,background=41)(1234567890)
 \x1b[1;38;41m1234567890\x1b[m
+
+original print function
 >>> print(*range(10))
->>> # F
+
+foreground
 >>> red.print(*range(10))
->>> # F-S
+
+foreground - state
 >>> red.bright.print(*range(10))
->>> # F-S-B
+
+foreground - state - background
 >>> red.bright.blue.print(*range(10))
->>> # F-B
+
+foreground - background
 >>> red.blue.print(*range(10))
->>> # F-B-S
+
+foreground - background - state
 >>> red.blue.bright.print(*range(10))
->>> # S
+
+state
 >>> bright.print(*range(10))
->>> # S-F
+
+state - foreground
 >>> bright.red.print(*range(10))
->>> # S-F-B
+
+state - foreground - background
 >>> bright.red.blue.print(*range(10))
 """
 
@@ -109,9 +122,6 @@ vars().update(gen_fcns())
 
 
 if __name__=='__main__':
-    '''
-    Execute ``python3.4 -m colorprint`` to get colorful output testing.
-    '''
 
     for k in States:
         vars()[k].print('{:20}'.format(k), *range(10))
