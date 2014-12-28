@@ -47,16 +47,23 @@ Sets multiple display attribute settings. The following lists standard attribute
 Examples
 --------
 
-The usage is designed for fun::
+The usage is designed for fun.
 
- .. code:: Python
+.. code:: Python
+
     # original print function
     print
-    # foreground black
-    black.print
-    # foreground light black
-    black.light.print
-    # foreground black, background yellow
-    black.yellow.print
-    # foreground light black, background yellow
-    black.light.yellow.print
+
+    # foreground blue
+    blue.print
+
+    # foreground light blue
+    blue.light.print
+    light.blue.print
+
+    # foreground blue, background yellow
+    blue.yellow.print
+
+    # foreground light blue, background yellow
+    blue.light.yellow.print
+    light.blue.yellow.print
