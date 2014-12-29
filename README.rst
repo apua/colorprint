@@ -12,8 +12,8 @@ One can write explict color name for print function easily, like that::
 If one wants use customized name for specific attributes, it can be updated like that::
 
     from colorprint import mapping, generate_functions
-    vt100_attibutes.update({'gray': (1,37)})
-    functions = generate_functions(vt100_attibutes)
+    mapping.update({'gray': (1,37)})
+    functions = generate_functions(mapping)
     vars().update(functions)
     __all__ = tuple(functions.keys())
     
@@ -62,8 +62,8 @@ Usage
    Or, you can just update existed mappings::
 
        from colorprint import mapping, generate_functions
-       vt100_attibutes.update({'gray': (1,37)})
-       functions = generate_functions(vt100_attibutes)
+       mapping.update({'gray': (1,37)})
+       functions = generate_functions(mapping)
        vars().update(functions)
        __all__ = tuple(functions.keys())
 
