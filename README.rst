@@ -2,13 +2,74 @@
 Color Print - VT100 Print Functions
 ===================================
 
-This is a module which provides print functions with color defined in 
-`VT100 Display Attributes`_ .
+:version: 1.0
+
+One can write explict color name for print function easily, like that::
+
+    from colorprint import *
+    yellow.bggreen.underscore.print(MyData)
+
+If one wants use customized name for specific attributes, it can be updated like that::
+
+    from colorprint import mapping, generate_functions
+    vt100_attibutes.update({'gray': (1,37)})
+    functions = generate_functions(vt100_attibutes)
+    vars().update(functions)
+    __all__ = tuple(functions.keys())
+    
+Thus one can customize own print functions as new module.
+
+The display attributes and format are defined in http://www.termsys.demon.co.uk/vtansi.htm,
+see `VT100 Display Attributes`_.
+
+
+When to use it
+==============
+
+When you develop a program, it might be helpful if you want to colorful print some data.
+
+It is just designed for convenience and not a pythonic design, .
+
+Usage
+=====
+
+1. To test effect on your terminal emulator, try::
+
+       python3.4 -m colorprint
+
+2. To enable colorful print functions, try::
+
+       from colorprint import *
+
+   Be careful of namespace.
+
+   After imporing, you can set VT100 attribute with explicit name.
+
+   For example, you can write::
+
+       yellow.black.underscore.blink.print(data)
+
+   And, the output equals ``'\x1b[33;40;4;5m{}\x1b[m'.format(data)``.
+
+3. If you want to customize "name - attributes" mappings, you can create a dict in the forms:
+
+   - `{ name: attr }`
+   - `{ name: (attr1, attr2, ...) }`
+
+   where `name` is type `str`, and `attr` is type `int`,
+   and then use ``generate_functions`` and ``vars().update`` to generate functions and set them as global variables.
+
+   Or, you can just update existed mappings::
+
+       from colorprint import mapping, generate_functions
+       vt100_attibutes.update({'gray': (1,37)})
+       functions = generate_functions(vt100_attibutes)
+       vars().update(functions)
+       __all__ = tuple(functions.keys())
+
 
 VT100 Display Attributes
 ------------------------
-
-The information comes from http://www.termsys.demon.co.uk/vtansi.htm .
 
 Set Attribute Mode::
 
