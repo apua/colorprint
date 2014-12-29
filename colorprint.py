@@ -42,7 +42,7 @@ class VT100_Attributes(dict):
                     |self._foreground.items()
                     |self._background.items()):
             self[k] = self.get(k, v)
-    
+
 
 def generate_functions(attrs):
     """
