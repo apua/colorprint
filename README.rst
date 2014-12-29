@@ -43,27 +43,3 @@ Sets multiple display attribute settings. The following lists standard attribute
     45  Magenta
     46  Cyan
     47  White
-
-Examples
---------
-
-The usage is designed for fun.
-
-.. code:: Python
-
-    # original print function
-    print
-
-    # foreground blue
-    blue.print
-
-    # foreground light blue
-    blue.light.print
-    light.blue.print
-
-    # foreground blue, background yellow
-    blue.yellow.print
-
-    # foreground light blue, background yellow
-    blue.light.yellow.print
-    light.blue.yellow.print
