@@ -1,3 +1,6 @@
+from colorprint import (__version__ as version,
+                        __author__ as author)
+
 from distutils.core import setup
 import sys
 
@@ -8,13 +11,12 @@ with open('README.rst') as file:
     long_description = file.read()
 
 setup(
-    name='VT100-ColorPrint',                                  
-    version='1.0',                                      
-    description='Color Print - VT100 Print Functions',  
+    name='VT100-ColorPrint',
+    version=version,
+    description='Color Print - VT100 Print Functions',
     long_description=long_description,
-    author='Apua',                                      
-    author_email='Apua.A.Aa@gmail.com',                 
-    url='https://github.com/apua/colorprint',           
-    license='WTFPL',                                    
+    author=author,
+    url='https://github.com/apua/colorprint',
+    license='WTFPL',
     py_modules=['colorprint'],
     )
