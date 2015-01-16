@@ -42,7 +42,7 @@ Here is an example to color whole string::
 
     colorprint --color light yellow bggreen underscore
 
-Separate to Fields
+Split to Fields
 ~~~~~~~~~~~~~~~~~~
 
 Color every parts of fields::
