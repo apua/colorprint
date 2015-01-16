@@ -1,75 +1,70 @@
-===================================
-Color Print - VT100 Print Functions
-===================================
+=================
+VT100 Color Print
+=================
 
-:version: 1.0
+:version: 2.0
 
-One can write explict color name for print function easily, like that::
+`VT100 Color Print` is a tool for temporary colorful printing.
 
-    from colorprint import *
-    yellow.bggreen.underscore.print(MyData)
+It might be helpful if you want to colorful print some data during developing program,
+or reading data stream.
 
-If one wants use customized name for specific attributes, it can be updated like that::
-
-    from colorprint import mapping, generate_functions
-    mapping.update({'gray': (1,37)})
-    functions = generate_functions(mapping)
-    vars().update(functions)
-    __all__ = tuple(functions.keys())
-    
-Thus one can customize own print functions as new module.
-
-The display attributes and format are defined in http://www.termsys.demon.co.uk/vtansi.htm,
-see `VT100 Display Attributes`_.
+Be aware of `VT100 Color Print` is not designed Pythonic and do not use in your production.
 
 
-When to use it
-==============
+Installation
+============
 
-When you develop a program, it might be helpful if you want to colorful print some data.
+``pip install vt100-colorprint``
 
-It is just designed for convenience and not a pythonic design, .
 
 Usage
 =====
 
-1. To test effect on your terminal emulator, try::
 
-       python3.4 -m colorprint
+FAQ
+===
 
-2. To enable colorful print functions, try::
+- :Q: Why take the PyPI name so long?
 
-       from colorprint import *
+  :A: I prefer "ColorPrint" but it has been taken.
+      That's OK, I think adding prefix would be more explicit that
+      "it support VT100".
 
-   Be careful of namespace.
+- :Q: Why create another colorful `print` function?
 
-   After imporing, you can set VT100 attribute with explicit name.
+  :A: I need a simple and intuitive way to write a temporary code.
+      What I found are not simple or intuitive enough.
 
-   For example, you can write::
+- :Q: Why create another colorful output command?
 
-       yellow.black.underscore.blink.print(data)
+  :A: I found there are many good command tool on PyPI, but not enough.
+      They usually support only basic color, so that when one color shows
+      not well on some terminal, it can not be given advanced set such as
+      'bright', 'underscore', 'reverse'....etc.
 
-   And, the output equals ``'\x1b[33;40;4;5m{}\x1b[m'.format(data)``.
+- :Q: Why not consider `print` statement?
 
-3. If you want to customize "name - attributes" mappings, you can create a dict in the forms:
+  :A: Print function is more powerful, useful.
+      In addition, `print` statement takes keyword 'print', thus it is very
+      difficult to design the tool.
 
-   - `{ name: attr }`
-   - `{ name: (attr1, attr2, ...) }`
+- :Q: I think the command is too long....
 
-   where `name` is type `str`, and `attr` is type `int`,
-   and then use ``generate_functions`` and ``vars().update`` to generate functions and set them as global variables.
+  :A: Please use `alias` statement in shell.
 
-   Or, you can just update existed mappings::
+- :Q: The color names are too verbose in shell.
 
-       from colorprint import mapping, generate_functions
-       mapping.update({'gray': (1,37)})
-       functions = generate_functions(mapping)
-       vars().update(functions)
-       __all__ = tuple(functions.keys())
+  :A: Explicit is better than implicit, it is not necessary to
+      remember the abbreviation of color names;
+      if it needs to record the repeatedly usedcolor combination,
+      please consider add it to your environment setting in shell.
 
 
-VT100 Display Attributes
-------------------------
+Appendix: VT100 Display Attributes
+==================================
+
+:source: http://www.termsys.demon.co.uk/vtansi.htm#colors
 
 Set Attribute Mode::
 
@@ -80,7 +75,7 @@ Sets multiple display attribute settings. The following lists standard attribute
     0   Reset all attributes
     1   Bright
     2   Dim
-    4   Underscore  
+    4   Underscore
     5   Blink
     7   Reverse
     8   Hidden
