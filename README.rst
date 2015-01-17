@@ -20,19 +20,6 @@ Installation
 Usage
 =====
 
-
-Color support test
-------------------
-
-Run as Python module::
-
-    $ python -m colorprint
-
-Run as a command::
-
-    $ colorprint --test
-
-
 Run as command
 --------------
 
@@ -58,12 +45,6 @@ it would be used as the default color when not specify color::
 Or, you can specify default color with argument::
 
     colorprint --pattern '\d+' --fields 4 --color bright yellow bgblue
-
-If you define a custom name of colors in env, it can be use directly::
-
-    # For Sh/Bash/Zsh ; in Csh/Tcsh, use ``setenv``
-    export grey='bright black'
-    colorprint --pattern '\d+' grey
 
 Shell is powerful enough.
 If you want type less, consider `alias` command to cut command::
@@ -119,6 +100,35 @@ Sepcial color needs can be defined::
    The methods are not designed Pythonic but just for convenience usage.
    It suggests not use it in production.
 
+Define custom color names
+-------------------------
+
+You can set environment variable ``COLORPRINT_CUSTOM`` to indicate
+which file contains custom color name.
+
+The file content like so::
+
+    # format: name values
+    # eg: ESC[1;30m
+    grey = 1 30
+    # eg: ESC[38;5;57m which is 256 color foreground
+    blueviolet = 38 5 57
+    # eg: ESC[48;5;57m which is 256 color background
+    bgblueviolet = 48 5 57
+    # eg: ESC[4;1;32;48;5;57m
+    highlight = underscore bold green bgblueviolet
+
+You can run command to test terminal color support::
+
+    colorprint test
+    colorprint test --16
+    colorprint test --256
+
+And, print the result of specified value::
+
+    colorprint test --16 1 30
+    colorprint test --256 57
+
 
 Built in names
 --------------
@@ -127,17 +137,15 @@ Built in names
 name               value
 ================   ======
 reset              0
+bold [0]_          1
 bright             1
-light [0]_         1
 dim                2
 underscore         4
-underline [0]_     4
+underlined [0]_    4
 blink              5
 reverse            7
 hidden             8
 black              30
-gray [0]_          1;30
-grey [0]_          1;30
 red                31
 green              32
 yellow             33
@@ -145,8 +153,6 @@ blue               34
 magenta            35
 purple [0]_        35
 cyan               36
-greenblue [0]_     36
-bluegreen [0]_     36
 white              37
 bgblack            40
 bgred              41
@@ -206,41 +212,9 @@ FAQ
       custome made is better, I think.
 
 
-Appendix: VT100 Display Attributes
-==================================
+Reference
+=========
 
-:source: http://www.termsys.demon.co.uk/vtansi.htm#colors
+- http://www.termsys.demon.co.uk/vtansi.htm#colors
 
-Set Attribute Mode::
-
-    <ESC>[{attr1};...;{attrn}m
-
-Sets multiple display attribute settings. The following lists standard attributes::
-
-    0   Reset all attributes
-    1   Bright
-    2   Dim
-    4   Underscore
-    5   Blink
-    7   Reverse
-    8   Hidden
-
-        Foreground Colours
-    30  Black
-    31  Red
-    32  Green
-    33  Yellow
-    34  Blue
-    35  Magenta
-    36  Cyan
-    37  White
-
-        Background Colours
-    40  Black
-    41  Red
-    42  Green
-    43  Yellow
-    44  Blue
-    45  Magenta
-    46  Cyan
-    47  White
+- http://misc.flogisoft.com/bash/tip_colors_and_formatting
