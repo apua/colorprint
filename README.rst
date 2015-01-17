@@ -4,6 +4,7 @@ VT100 Color Print
 
 :version: 2.0
 
+
 `VT100 Color Print` is a tool for temporary colorful printing.
 
 It might be helpful if you want to colorful print some data during developing program,
@@ -37,77 +38,83 @@ Run as a command::
 Run as command
 --------------
 
-You can easy to indicate and combine VT100 color attribute for coloring.
-Here is an example to color whole string::
+Select fields to color::
 
-    colorprint --color light yellow bggreen underscore
+    colorprint --fields 2::2 -1 yellow bggreen underscore
 
-Split to Fields
-~~~~~~~~~~~~~~~~~~
+Choose specified separator::
 
-Color every parts of fields::
+    colorprint --fields 5 reverse --separator ', *'
 
-    colorprint split --color reverse
+Search pattern to color::
 
-Indicate the seperator with regexp::
+    colorprint --pattern '(?sx) (\[)(\d+)(?(1)]).*(\2)' 2 3 reverse
 
-    colorprint split --field-seperator ',\s*' --color reverse
+If environment variable `COLORPRINT_DEFAULT` has been set,
+it would be used as the default color when not specify color::
 
-Indicate which fields would be colored::
+    # For Sh/Bash/Zsh ; in Csh/Tcsh, use ``setenv``
+    export COLORPRINT_DEFAULT='bright white bgblue'
+    colorprint --pattern '\d+' --fields 4
 
-    colorprint split --positions 1 3 5 --color reverse
+Or, you can specify default color with argument::
 
-More ways to indicate fields::
+    colorprint --pattern '\d+' --fields 4 --color bright yellow bgblue
 
-    colorprint split --positions 2:-1:2 -1 --color reverse
+If you define a custom name of colors in env, it can be use directly::
 
-Set fields in different colors::
-
-    colorprint split --map 2::2 bright red --map -1 reset cyan
-
-Find with Regexp
-~~~~~~~~~~~~~~~~
-
-Find matched string to color::
-
-    colorprint find --pattern '(?sx) (\[)(\d+)(?(1)]).*(\2)' 3 --color reverse
-
-Set more than one matched pattern in different colors::
-
-    colorprint find --map pam_unix red --map 'pam_unix\([^)]+)\)' blue
-
-
-Shell suppport
-~~~~~~~~~~~~~~
-
-Abbreviation of color names::
-
-    # Sh, Bash, Zsh, ...
+    # For Sh/Bash/Zsh ; in Csh/Tcsh, use ``setenv``
     export grey='bright black'
-    export gray=$grey
+    colorprint --pattern '\d+' grey
 
-    # Csh, Tcsh, ...
-    setenv grey='bright black'
-    setenv gray=$grey
+Shell is powerful enough.
+If you want type less, consider `alias` command to cut command::
 
-Default highlight color setting
+    alias pcf='colorprint --fields'
+
+Or, you can set arguments as variable::
+
+    match_number='\d+ reverse'
+
+In addition, you can use every redirection feature to input file::
+
+    pcf 3 $match_number < $input_file_name
+
+By default, `colorprint` will only colorfully print on terminal;
+you can delivery color information through shell redirection with argument::
+
+    pcf 3 --deliver > $output_file_name
+
+All arguments have short forms for convenience:
+
+    ===============   ==============
+    long argument     short argument
+    ===============   ==============
+    ``--fields``      ``-F``
+    ``--separator``   ``-S``
+    ``--pattern``     ``-P``
+    ``--color``       ``-C``
+    ``--deliver``     ``-D``
+    ===============   ==============
 
 
-Alias command name::
+Use in developing program
+-------------------------
 
-    # Sh, Bash, Zsh, ...
-    alias pcf='colorprint field -P'
+You can import `colorprint` to get colorful print tools::
 
-    # Csh, Tcsh, ...
-    alias pcf colorprint field -P
+    from colorprint import print, pprint, colorlist
 
-Input file::
+Then every color names after print function would let
+printing string colorful::
 
-    pcf 3 < $input_file_name
+    print.yellow.bgblue(sep='\n', *mylist)
+    pprint.yellow.bgblue(mylist, depth=1)
 
-Redirection with color information::
+Sepcial color needs can be defined::
 
-    pcf --always < $input_file_name > $output_file_name
+   colorlist['grey'] = colorlist['yellow']+colorlist['bgblue']
+   print.grey(mydata)
 
 
 FAQ
@@ -147,6 +154,11 @@ FAQ
       remember the abbreviation of color names;
       if it needs to record the repeatedly usedcolor combination,
       please consider add it to your environment setting in shell.
+
+- :Q: Why provide a colorful string generator tool?
+
+  :A: If you need colorful strings in your product,
+      custome made is better, I think.
 
 
 Appendix: VT100 Display Attributes
