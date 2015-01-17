@@ -7,10 +7,8 @@ VT100 Color Print
 
 `VT100 Color Print` is a tool for temporary colorful printing.
 
-It might be helpful if you want to colorful print some data during developing program,
-or reading data stream.
-
-Be aware of `VT100 Color Print` is not designed Pythonic and do not use in your production.
+It is designed for convenience with intuitive color names,
+and simple ways to quickly let the output string colorful.
 
 
 Installation
@@ -116,6 +114,11 @@ Sepcial color needs can be defined::
    colorlist['grey'] = colorlist['yellow']+colorlist['bgblue']
    print.grey(mydata)
 
+.. note::
+
+   The methods are not designed Pythonic but just for convenience usage.
+   It suggests not use it in production.
+
 
 Built in names
 --------------
@@ -125,25 +128,25 @@ name               value
 ================   ======
 reset              0
 bright             1
-light [*]_         1
+light [0]_         1
 dim                2
 underscore         4
-underline [*]_     4
+underline [0]_     4
 blink              5
 reverse            7
 hidden             8
 black              30
-gray [*]_          1;30
-grey [*]_          1;30
+gray [0]_          1;30
+grey [0]_          1;30
 red                31
 green              32
 yellow             33
 blue               34
 magenta            35
-purple [*]_        35
+purple [0]_        35
 cyan               36
-greenblue [*]_     36
-bluegreen [*]_     36
+greenblue [0]_     36
+bluegreen [0]_     36
 white              37
 bgblack            40
 bgred              41
@@ -151,9 +154,12 @@ bggreen            42
 bgyellow           43
 bgblue             44
 bgmagenta          45
-bgpurple [*]_      45
+bgpurple [0]_      45
 bgcyan             46
 bgwhite            47
+================   ======
+
+.. [0] A custom color name.
 
 
 FAQ
