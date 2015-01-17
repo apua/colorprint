@@ -9,7 +9,7 @@ setup(
     author='Apua',
     url='https://github.com/apua/colorprint',
     license='WTFPL',
-    package_dir={'': 'PY2' if sys.version_info[0]==2 else ''}
+    package_dir={'': 'PY2' if sys.version_info[0]==2 else ''},
     packages=['colorprint'],
     scripts=['scripts/colorprint'],
     )
