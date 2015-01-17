@@ -117,6 +117,45 @@ Sepcial color needs can be defined::
    print.grey(mydata)
 
 
+Built in names
+--------------
+
+================   ======
+name               value
+================   ======
+reset              0
+bright             1
+light [*]_         1
+dim                2
+underscore         4
+underline [*]_     4
+blink              5
+reverse            7
+hidden             8
+black              30
+gray [*]_          1;30
+grey [*]_          1;30
+red                31
+green              32
+yellow             33
+blue               34
+magenta            35
+purple [*]_        35
+cyan               36
+greenblue [*]_     36
+bluegreen [*]_     36
+white              37
+bgblack            40
+bgred              41
+bggreen            42
+bgyellow           43
+bgblue             44
+bgmagenta          45
+bgpurple [*]_      45
+bgcyan             46
+bgwhite            47
+
+
 FAQ
 ===
 
