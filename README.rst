@@ -2,7 +2,7 @@
 VT100 Color Print
 =================
 
-:version: 2.0
+:version: 2
 
 
 `VT100 Color Print` is a tool for temporary colorful printing.

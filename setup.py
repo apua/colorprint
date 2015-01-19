@@ -11,5 +11,5 @@ setup(
     license='WTFPL',
     package_dir={'': 'PY2' if sys.version_info[0]==2 else ''},
     packages=['colorprint'],
-    scripts=['scripts/colorprint'],
+    #scripts=['scripts/colorprint'],
     )
