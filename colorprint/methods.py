@@ -33,6 +33,7 @@ class ColorPPrint(ColorPrint):
                  compact=False):
         """copy from `pprint.pprint`"""
         from pprint import PrettyPrinter
+        import re
 
         printer = PrettyPrinter(stream=stream, indent=indent,
                                 width=width, depth=depth, compact=compact)
@@ -41,7 +42,15 @@ class ColorPPrint(ColorPrint):
         printer._stream = color_stream
 
         colored = colorform(self.values).format
-        color_stream.write = lambda s: stream.write(colored(s))
+        #color_stream.write = lambda s: stream.write(colored(s))
+        def write(s, patt=re.compile(r'^(,?)(\n\ *)(.*)$')):
+            m = patt.match(s)
+            if m is not None:
+                a, b, c = m.groups()
+                stream.write((a and colored(a)) + b + (c and colored(c)))
+            else:
+                stream.write(colored(s))
+        color_stream.write = write
         printer.pprint(object)
 
 
@@ -49,8 +58,7 @@ print  = ColorPrint()
 pprint = ColorPPrint()
 
 if __name__=='__main__':
-    pass
-
+    '''
     # instantiate test
     print(sep='\n', *attr_names.items())
     pprint(attr_names)
@@ -66,12 +74,15 @@ if __name__=='__main__':
     print(' ', sep=' - ', *range(10))
     print.red(' ', sep=' - ', *range(10))
     print.red.bgcyan(' ', sep=' - ', *range(10))
+    '''
 
-    N = 15
-    D = dict(zip(range(N),range(N)))
-    pprint(D)
-    pprint.red.bgcyan(D)
+    rec = []; rec.append(rec)
+    obj = ([0,1,{2:"3 33 333",4:{5, lambda:0}}],rec)
+    print.reverse(obj)
+    pprint.reverse(obj, indent=3, width=1)
 
+    '''
     # exception test
     print.kkk
+    '''
 
