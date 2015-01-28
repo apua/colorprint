@@ -2,13 +2,6 @@ from .info import __version__
 
 
 def get_arguments():
-    '''
-    questions:
-      1. make a new class inherit ArgumentParser
-         support checking condition
-      2. make a new class inherit ArgumentParser
-         support modify usage
-    '''
     import argparse
     parser = argparse.ArgumentParser(
         prog='ColorPrint',
