@@ -1,0 +1,2 @@
+from colorprint import commands
+commands.run_cmd()

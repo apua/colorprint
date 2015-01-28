@@ -47,3 +47,8 @@ def get_arguments():
         action='version', version=__version__,
         )
     return parser.parse_args()
+
+
+def run_cmd():
+    args = get_arguments()
+    print(args)
