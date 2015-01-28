@@ -47,7 +47,3 @@ def get_arguments():
         action='version', version=__version__,
         )
     return parser.parse_args()
-
-
-args = get_arguments()
-print(args)
