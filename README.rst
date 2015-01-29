@@ -120,14 +120,14 @@ The file content like so::
 
 You can run command to test terminal color support::
 
-    colorprint test
-    colorprint test --16
-    colorprint test --256
+    colorprint show
+    colorprint show --16
+    colorprint show --256
 
 And, print the result of specified value::
 
-    colorprint test --16 1 30
-    colorprint test --256 57
+    colorprint show --16 1 30
+    colorprint show --256 57
 
 
 Built in names
