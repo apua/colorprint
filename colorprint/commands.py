@@ -19,6 +19,7 @@ def get_arguments():
             )
     '''
     import argparse
+    import re
 
     from .info import __version__
     from .attributes import attr_names
@@ -39,7 +40,7 @@ def get_arguments():
         )
     parser.add_argument(
         '-S', '--separator', metavar='sep',
-        default=r'\s+',
+        type=re.compile, default=r'\s+',
         help='...'*30,
         )
     parser.add_argument(
@@ -50,7 +51,8 @@ def get_arguments():
         )
     parser.add_argument(
         '-C', '--color', metavar='color',
-        nargs='+', #default=get_default_color(),
+        nargs='+',
+        default=get_default_color(),
         help='...'*30,
         )
     parser.add_argument(
