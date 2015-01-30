@@ -44,7 +44,7 @@ it would be used as the default color when not specify color::
 
 Or, you can specify default color with argument::
 
-    colorprint --pattern '\d+' --fields 4 --color bright yellow bgblue
+    colorprint --pattern '\d+' --fields 4 --default bright yellow bgblue
 
 Shell is powerful enough.
 If you want type less, consider `alias` command to cut command::
@@ -59,22 +59,22 @@ In addition, you can use every redirection feature to input file::
 
     pcf 3 $match_number < $input_file_name
 
-By default, `colorprint` will only colorfully print on terminal;
-you can delivery color information through shell redirection with argument::
+By default, `colorprint` will delivery color information through shell redirection;
+if you only want colorfully print on terminal but redirect plain text, here is::
 
-    pcf 3 --deliver > $output_file_name
+    pcf 3 --not-redirect > $output_file_name
 
 All arguments have short forms for convenience:
 
-    ===============   ==============
-    long argument     short argument
-    ===============   ==============
-    ``--fields``      ``-F``
-    ``--separator``   ``-S``
-    ``--pattern``     ``-P``
-    ``--color``       ``-C``
-    ``--deliver``     ``-D``
-    ===============   ==============
+    ==================   ==============
+    long argument        short argument
+    ==================   ==============
+    ``--fields``         ``-F``
+    ``--separator``      ``-S``
+    ``--pattern``        ``-P``
+    ``--default``        ``-D``
+    ``--not-redirect``   ``-N``
+    ==================   ==============
 
 
 Use in developing program
