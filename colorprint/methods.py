@@ -2,30 +2,30 @@
 Provide `print` and `pprint` methods.
 """
 
-from .attributes import attr_names
+from .attributes import color_attr_mapping
 
 
-def colorform(values):
-    attrs = ';'.join(map(str, values))
+def colorform(vt_attr):
+    attrs = ';'.join(map(str, vt_attr))
     return '\033[{}m{{}}\033[m'.format(attrs)
 
 
 class ColorPrint:
     _print  = print
 
-    def __init__(self, values=()):
-        self.values = values
+    def __init__(self, vt_attr=()):
+        self.vt_attr = vt_attr
 
     def __call__(self, *args, **kwargs):
-        colored = colorform(self.values).format
+        colored = colorform(self.vt_attr).format
         outputs = map(colored, map(str, args))
         self._print(*outputs, **kwargs)
 
-    def __getattr__(self, attr):
-        values = attr_names.get(attr)
-        if values is None:
-            raise AttributeError('Color "%s" is not defined'%attr)
-        return self.__class__(self.values+values)
+    def __getattr__(self, color_name):
+        vt_attr = color_attr_mapping.get(color_name)
+        if vt_attr is None:
+            raise AttributeError('Color "%s" is not defined' % vt_attr)
+        return self.__class__(self.vt_attr + vt_attr)
 
 
 class ColorPPrint(ColorPrint):
@@ -41,7 +41,7 @@ class ColorPPrint(ColorPrint):
         color_stream = type('',(),{})()
         printer._stream = color_stream
 
-        colored = colorform(self.values).format
+        colored = colorform(self.vt_attr).format
         #color_stream.write = lambda s: stream.write(colored(s))
         def write(s, patt=re.compile(r'^(,?)(\n\ *)(.*)$')):
             m = patt.match(s)

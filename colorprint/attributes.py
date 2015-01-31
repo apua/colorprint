@@ -5,8 +5,10 @@ Store color names and get custom names according to env
 import os
 
 
-custom_file = os.environ.get('COLORPRINT_CUSTOM')
-attr_names = {
+VAR_CUSTOM  = 'COLORPRINT_CUSTOM'
+VAR_DEFAULT = 'COLORPRINT_DEFAULT'
+
+basic_mapping = {
     'reset':              (0,),
     'bold':               (1,),
     'bright':             (1,),
@@ -36,10 +38,30 @@ attr_names = {
     'bgwhite':            (47,),
 }
 
-if custom_file is not None:
-    pass # parse custom file and update to `attr_names`
+
+class AttributeMapping(dict):
+    is_init = False
+    custom_filename = ''
+
+    @classmethod
+    def retrieve_data(cls):
+        if cls.custom_filename:
+            pass
+        return basic_mapping
+
+    def update_if_not_init(self):
+        cls = __class__
+        orig_getattribute = object.__getattribute__
+        if not cls.is_init:
+            self_update = orig_getattribute(self, 'update')
+            self_update(cls.retrieve_data())
+            cls.is_init = True
+
+    def __getattribute__(self, *a, **k):
+        __class__.update_if_not_init(self)
+        return object.__getattribute__(self, *a, **k)
 
 
-if __name__=='__main__':
-    from pprint import pprint
-    pprint(attr_names)
+AttributeMapping.custom_filename = os.environ.get(VAR_CUSTOM, '')
+color_attr_mapping = AttributeMapping()
+default_color_name = os.environ.get(VAR_DEFAULT, '')
