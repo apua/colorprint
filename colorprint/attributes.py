@@ -64,4 +64,5 @@ class AttributeMapping(dict):
 
 AttributeMapping.custom_filename = os.environ.get(VAR_CUSTOM, '')
 color_attr_mapping = AttributeMapping()
-default_color_name = os.environ.get(VAR_DEFAULT, '')
+
+default_color = os.environ.get(VAR_DEFAULT, '')
