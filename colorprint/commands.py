@@ -72,10 +72,14 @@ def get_terminal_size():
         return (25, 80)
 
 
-def format_vt_attrs(vt_attrs):
+def attrs_output(vt_attrs):
     attrs  = ';'.join(map(str,vt_attrs))
     string = ' '.join(map(str,vt_attrs))
     return '\033[{}m{:8}\033[m'.format(attrs, string)
+
+
+def format_color(vt_attrs):
+    return attrs_output(vt_attrs)+'\n'
 
 
 def format_color16():
@@ -85,17 +89,19 @@ def format_color16():
         )
     int2attrs = lambda i: (i,)
     vt_attrs_list = map(int2attrs, defined_numbers)
-    strings = tuple(map(format_vt_attrs, vt_attrs_list))
-    return '  '.join(strings[:7])+'\n'+'\n'.join('  '.join(strings[i:i+8])
-                                                 for i in range(7,39,8))
+    strings = tuple(map(attrs_output, vt_attrs_list))
+    options = '  '.join(strings[:7]) + '\n'
+    foreground = '\n'.join('  '.join(strings[i:i+8]) for i in range(7,23,8))+'\n'
+    background = '\n'.join('  '.join(strings[i:i+8]) for i in range(23,39,8))+'\n'
+    return options + foreground + background
 
 
 def format_color256():
     defined_numbers = tuple(range(256))
     int2attrs = lambda i: (38,5,i)
     vt_attrs_list = map(int2attrs, defined_numbers)
-    strings = tuple(map(format_vt_attrs, vt_attrs_list))
-    return '\n'.join('  '.join(strings[i:i+8]) for i in range(0,256,8))
+    strings = tuple(map(attrs_output, vt_attrs_list))
+    return '\n'.join('  '.join(strings[i:i+8]) for i in range(0,256,8))+'\n'
 
 
 def get_stages(namespace):
@@ -126,12 +132,12 @@ def run_cmd():
 
     if   ns.show16 is not None:
         if ns.show16:
-            parser.exit(message=format_vt_attrs(ns.show16))
+            parser.exit(message=format_color(ns.show16))
         else:
             parser.exit(message=format_color16())
     elif ns.show256 is not None:
         if ns.show256:
-            parser.exit(message=format_vt_attrs(ns.show256))
+            parser.exit(message=format_color(ns.show256))
         else:
             parser.exit(message=format_color256())
     else:
