@@ -10,6 +10,36 @@ def create_parser():
         epilog='...'*30,
         )
     parser.add_argument(
+        '--version',
+        action='version',
+        version=__version__,
+        )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        '--show16', metavar='attr',
+        nargs='*',
+        type=int,
+        help='==='*30,
+        )
+    group.add_argument(
+        '--show256', metavar='attr',
+        nargs='*',
+        type=int,
+        help='==='*30,
+        )
+    parser.add_argument(
+        '--not-redirect',
+        action='store_true',
+        default=False,
+        help='...'*30,
+        )
+    parser.add_argument(
+        '-D', '--default', metavar='color',
+        nargs='+',
+        default=default_color,
+        help='...'*30,
+        )
+    parser.add_argument(
         '-F', '--fields', metavar='condition',
         dest='conditions', nargs='+', action='append',
         type=type('field_arg',(str,),{}),
@@ -26,45 +56,46 @@ def create_parser():
         type=type('patt_arg',(str,),{}),
         help='...'*30,
         )
-    parser.add_argument(
-        '-D', '--default', metavar='color',
-        nargs='+',
-        default=default_color,
-        help='...'*30,
-        )
-    parser.add_argument(
-        '-N', '--not-redirect',
-        action='store_true',
-        default=False,
-        help='...'*30,
-        )
-    parser.add_argument(
-        '--version',
-        action='version',
-        version=__version__,
-        )
-
-    subparsers = parser.add_subparsers(help='= =')
-    subparser = subparsers.add_parser('show')
-    group = subparser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
-        '-16', metavar='attr',
-        dest='show_16', nargs='*',
-        type=int,
-        help='==='*30,
-        )
-    group.add_argument(
-        '-256', metavar='attr',
-        dest='show_256', nargs='*',
-        type=int,
-        help='==='*30,
-        )
 
     return parser
 
 
-def show_color(mode, attrs):
-    pass
+def get_terminal_size():
+    "return (lines, cols)"
+    import fcntl, struct, termios
+    try:
+        for fd in (0,1,2):
+            v = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '*'*4))
+            if v:
+                return v
+    except OSError:
+        return (25, 80)
+
+
+def format_vt_attrs(vt_attrs):
+    attrs  = ';'.join(map(str,vt_attrs))
+    string = ' '.join(map(str,vt_attrs))
+    return '\033[{}m{:8}\033[m'.format(attrs, string)
+
+
+def format_color16():
+    defined_numbers = sum(
+        (tuple(range(*t)) for t in ((30,38),(40,48),(90,98),(100,108))),
+        (0,1,2,4,5,7,8),
+        )
+    int2attrs = lambda i: (i,)
+    vt_attrs_list = map(int2attrs, defined_numbers)
+    strings = tuple(map(format_vt_attrs, vt_attrs_list))
+    return '  '.join(strings[:7])+'\n'+'\n'.join('  '.join(strings[i:i+8])
+                                                 for i in range(7,39,8))
+
+
+def format_color256():
+    defined_numbers = tuple(range(256))
+    int2attrs = lambda i: (38,5,i)
+    vt_attrs_list = map(int2attrs, defined_numbers)
+    strings = tuple(map(format_vt_attrs, vt_attrs_list))
+    return '\n'.join('  '.join(strings[i:i+8]) for i in range(0,256,8))
 
 
 def get_stages(namespace):
@@ -88,92 +119,29 @@ def gen_coloring_write(func, not_redirect, stdout, stderr):
 
 def run_cmd():
     import sys
-
     from .attributes import color_attr_mapping
 
     parser = create_parser()
     ns = parser.parse_args()
-    #print(ns)
-    #print(dir(parser))
-    #print(parser.format_usage())
 
-    def cmd_error(msg, parser=parser):
-        prog = parser.prog
-        templ = '{prog}: error: {msg}\n'
-        sys.stderr.write(parser.format_usage())
-        sys.stderr.write(templ.format(**locals()))
-        sys.exit(2)
-
-    #cmd_error('asdfghjkl;')
-
-    if 'show_16' in ns:
-        if ns.conditions is not None:
-            cmd_error('don`t use commend and sub-commend together')
-
-        if ns.show_16 is not None:
-            show_color(16, ns.show_16)
+    if   ns.show16 is not None:
+        if ns.show16:
+            parser.exit(message=format_vt_attrs(ns.show16))
         else:
-            show_color(256, ns.show_256)
+            parser.exit(message=format_color16())
+    elif ns.show256 is not None:
+        if ns.show256:
+            parser.exit(message=format_vt_attrs(ns.show256))
+        else:
+            parser.exit(message=format_color256())
     else:
         try:
             stages = get_stages(ns)
         except (ValueError, KeyError) as e:
-            cmd_error(e.message)
+            parser.error(e.message)
 
         func = gen_coloring_func(stages)
         write = gen_coloring_write(func, ns.not_redirect,
                                    stdout=sys.stdout, stderr=sys.stderr)
         for line in sys.stdin:
             write(line)
-'''
-try:
-
-if '16' in ns:
-    if ns.conditions is not None:
-        parser.print_usage()
-
-#
-try:
-    if ns.conditions:
-        ns.conditions = tuple(map(be_strict, ns.conditions))
-except ValueError as e:
-    para, cond = e.args
-    parser.print_usage()
-    print("{}: error: invalid condition: {} {}".
-          format(parser.prog, para, ' '.join(cond)))
-except KeyError as e:
-    color, = e.args
-    parser.print_usage()
-    print("{}: error: color {} is not defined".
-          format(parser.prog, color))
-return ns
-
-def be_strict(cond):
-    def get_type(arg):
-        return str(arg.__class__).split("'")[-2].split('.')[-1]
-
-    def be_field_args(cond):
-        fields = set()
-        colors = ()
-        range_arg = re.compile(r'^([+\-\d]*):?([+\-\d]*):?([+\-\d]*)$')
-        for idx, arg in enumerate(cond):
-            m = range_arg.match(arg)
-            if m is not None:
-                fields.add(tuple(int(s) if s else None for s in m.groups()))
-            else:
-                colors = tuple(cond[idx:])
-                break
-        if not fields or any(c not in color_mapping for c in colors):
-            raise ValueError('--field', cond)
-        return {'func': color_by_field, 'fields': fields, 'colors': colors}
-
-    def be_patten_args(cond):
-        pattern = re.compile(cond[0])
-        group_arg = re.compile(r'^(\d+)$')
-        return {}
-
-    if get_type(cond[0])=='field_arg':
-        return be_field_args(cond)
-    else:
-        return be_patten_args(cond)
-'''
