@@ -63,6 +63,7 @@ def create_parser():
 def get_terminal_size():
     "return (lines, cols)"
     import fcntl, struct, termios
+
     try:
         for fd in (0,1,2):
             v = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '*'*4))
@@ -105,11 +106,39 @@ def format_color256():
 
 
 def get_stages(namespace):
-    return () # not lazy; break if failed
+    import re
+
+    from .attributes import color_attr_mapping
+
+    sep = re.compile(namespace.separator)
+    field_form = re.compile(r'^([+\-\d]*):?([+\-\d]*):?([+\-\d]*)$')
+
+    #stages = []
+    #for cond in namespace.conditions:
+    #    arg_type = type(cond[0]).__name__
+    #    if   arg_type=='field_arg':
+    #        stages.append(field2stage(cond))
+    #    elif arg_type=='patt_arg':
+    #        stages.append(patt2stage(cond))
+    #    else:
+    #        raise Exception('appear non-existent argumets type')
+
+    def patt2stage(cond):
+        print(cond)
+        return ()
+
+    def field2stage(cond):
+        raise ValueError('.......')
+        return ()
+
+    is_patt_args = lambda cond: type(cond[0]).__name__=='patt_arg'
+    stages = tuple((patt2stage if is_patt_args(cond) else field2stage)(cond)
+                   for cond in namespace.conditions)
+    return stages
 
 
 def gen_coloring_func(stages):
-    return (lambda line: line)
+    return '\033[38;5;38m{}\033[m'.format
 
 
 def gen_coloring_write(func, not_redirect, stdout, stderr):
@@ -125,7 +154,6 @@ def gen_coloring_write(func, not_redirect, stdout, stderr):
 
 def run_cmd():
     import sys
-    from .attributes import color_attr_mapping
 
     parser = create_parser()
     ns = parser.parse_args()
@@ -144,7 +172,7 @@ def run_cmd():
         try:
             stages = get_stages(ns)
         except (ValueError, KeyError) as e:
-            parser.error(e.message)
+            parser.error(e.args[0])
 
         func = gen_coloring_func(stages)
         write = gen_coloring_write(func, ns.not_redirect,
