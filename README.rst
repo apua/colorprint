@@ -73,7 +73,6 @@ All arguments have short forms for convenience:
     ``--separator``      ``-S``
     ``--pattern``        ``-P``
     ``--default``        ``-D``
-    ``--not-redirect``   ``-N``
     ==================   ==============
 
 
