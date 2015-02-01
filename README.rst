@@ -125,7 +125,7 @@ You can run command to test terminal color support::
 And, print the result of specified value::
 
     colorprint --show16 1 30
-    colorprint --show256 57
+    colorprint --show256 48 5 57
 
 
 Built in names
