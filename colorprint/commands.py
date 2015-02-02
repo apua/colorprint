@@ -105,39 +105,85 @@ def format_color256():
     return '\n'.join('  '.join(strings[i:i+8]) for i in range(0,256,8))+'\n'
 
 
-def get_stages(namespace):
+def get_stages(parser, namespace):
     import re
 
     from .attributes import color_attr_mapping
 
     sep = re.compile(namespace.separator)
-    field_form = re.compile(r'^([+\-\d]*):?([+\-\d]*):?([+\-\d]*)$')
+    field_form = re.compile(r'^((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?$')
+    group_form = re.compile(r'^(?:\+|-)?\d+$')
 
-    #stages = []
-    #for cond in namespace.conditions:
-    #    arg_type = type(cond[0]).__name__
-    #    if   arg_type=='field_arg':
-    #        stages.append(field2stage(cond))
-    #    elif arg_type=='patt_arg':
-    #        stages.append(patt2stage(cond))
-    #    else:
-    #        raise Exception('appear non-existent argumets type')
+    #color_help = parser._actions[-4].help
+    #field_help = parser._actions[-3].help
+    #patt_help  = parser._actions[-1].help
 
     def patt2stage(cond):
-        print(cond)
-        return ()
+        gidx = set()
+        colors = ()
+        for idx, arg in enumerate(cond):
+            if idx==0:
+                patt = arg
+                continue
+            m = group_form.match(arg)
+            if m:
+                group_idx = int(m.group())
+                if group_idx <= 0:
+                    raise ValueError('group index should be greater than zero')
+                gidx.add(group_idx)
+            else:
+                colors = cond[idx:]
+                break
+        if not gidx:
+            gidx.add(0)
+
+        if not colors:
+            if not namespace.default:
+                raise ValueError('should give at lease one color')
+            colors = (namespace.default,)
+        attrs = []
+        for c in colors:
+            attr = color_attr_mapping.get(c)
+            if attr is None:
+                raise KeyError('color "{}" is not defined'.format(c))
+            attrs.append(attr)
+
+        print(patt, gidx, colors)
+        return (patt, gidx, colors)
 
     def field2stage(cond):
-        raise ValueError('.......')
-        return ()
+        fields = set()
+        colors = ()
+        for idx, arg in enumerate(cond):
+            m = field_form.match(arg)
+            if m:
+                fields.add(tuple(i and int(i) for i in m.groups()))
+            else:
+                colors = cond[idx:]
+                break
+        if not fields:
+            raise ValueError('should give at lease one field')
+
+        if not colors:
+            if not namespace.default:
+                raise ValueError('should give at lease one color')
+            colors = (namespace.default,)
+
+        attrs = tuple(color_attr_mapping.get(c) for c in colors)
+        for idx, attr in enumerate(attrs):
+            if attr is None:
+                raise KeyError('color "{}" is not defined'.format(colors[idx]))
+
+        print(fields, colors)
+        return (fields, colors)
 
     is_patt_args = lambda cond: type(cond[0]).__name__=='patt_arg'
     stages = tuple((patt2stage if is_patt_args(cond) else field2stage)(cond)
                    for cond in namespace.conditions)
-    return stages
+    return (sep, stages)
 
 
-def gen_coloring_func(stages):
+def gen_coloring_func(sep, stages):
     return '\033[38;5;38m{}\033[m'.format
 
 
@@ -156,26 +202,26 @@ def run_cmd():
     import sys
 
     parser = create_parser()
-    ns = parser.parse_args()
+    namespace = parser.parse_args()
 
-    if   ns.show16 is not None:
-        if ns.show16:
-            parser.exit(message=format_color(ns.show16))
+    if   namespace.show16 is not None:
+        if namespace.show16:
+            parser.exit(message=format_color(namespace.show16))
         else:
             parser.exit(message=format_color16())
-    elif ns.show256 is not None:
-        if ns.show256:
-            parser.exit(message=format_color(ns.show256))
+    elif namespace.show256 is not None:
+        if namespace.show256:
+            parser.exit(message=format_color(namespace.show256))
         else:
             parser.exit(message=format_color256())
     else:
         try:
-            stages = get_stages(ns)
+            sep, stages = get_stages(parser, namespace)
         except (ValueError, KeyError) as e:
             parser.error(e.args[0])
 
-        func = gen_coloring_func(stages)
-        write = gen_coloring_write(func, ns.not_redirect,
+        func = gen_coloring_func(sep, stages)
+        write = gen_coloring_write(func, namespace.not_redirect,
                                    stdout=sys.stdout, stderr=sys.stderr)
         for line in sys.stdin:
             write(line)
