@@ -148,8 +148,8 @@ def get_stages(parser, namespace):
                 raise KeyError('color "{}" is not defined'.format(c))
             attrs.append(attr)
 
-        print(patt, gidx, colors)
-        return (patt, gidx, colors)
+        print(patt, gidx, attrs)
+        return (patt, gidx, attrs)
 
     def field2stage(cond):
         fields = set()
@@ -167,15 +167,15 @@ def get_stages(parser, namespace):
         if not colors:
             if not namespace.default:
                 raise ValueError('should give at lease one color')
-            colors = (namespace.default,)
+            colors = namespace.default
 
         attrs = tuple(color_attr_mapping.get(c) for c in colors)
         for idx, attr in enumerate(attrs):
             if attr is None:
                 raise KeyError('color "{}" is not defined'.format(colors[idx]))
 
-        print(fields, colors)
-        return (fields, colors)
+        print(fields, attrs)
+        return (fields, attrs)
 
     is_patt_args = lambda cond: type(cond[0]).__name__=='patt_arg'
     stages = tuple((patt2stage if is_patt_args(cond) else field2stage)(cond)
@@ -215,6 +215,9 @@ def run_cmd():
         else:
             parser.exit(message=format_color256())
     else:
+        if namespace.conditions is None:
+            parser.print_help()
+            parser.exit()
         try:
             sep, stages = get_stages(parser, namespace)
         except (ValueError, KeyError) as e:
