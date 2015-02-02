@@ -123,7 +123,7 @@ def get_stages(parser, namespace):
         colors = ()
         for idx, arg in enumerate(cond):
             if idx==0:
-                patt = arg
+                patt = re.compile(arg)
                 continue
             m = group_form.match(arg)
             if m:
