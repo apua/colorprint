@@ -108,6 +108,7 @@ def format_color256():
 def get_stages(parser, namespace):
     import re
 
+    # It might no need to make `color_attr_mapping` so complicated.
     from .attributes import color_attr_mapping
 
     sep = re.compile(namespace.separator)
@@ -117,6 +118,24 @@ def get_stages(parser, namespace):
     #color_help = parser._actions[-4].help
     #field_help = parser._actions[-3].help
     #patt_help  = parser._actions[-1].help
+
+    def colors2attr(colors):
+        if not colors:
+            if not namespace.default:
+                raise ValueError('it should be given at least one color')
+            colors = namespace.default
+
+        attr = ()
+        for c in colors:
+            _attr = color_attr_mapping.get(c)
+            if _attr is None:
+                raise KeyError('color "{}" is not defined'.format(c))
+            #try:
+            #    _attr = color_attr_mapping[c]
+            #except KeyError:
+            #    raise KeyError('color "{}" is not defined'.format(c))
+            attr += _attr
+        return attr
 
     def patt2stage(cond):
         gidc = set()
@@ -136,24 +155,12 @@ def get_stages(parser, namespace):
                 break
         if not gidc:
             gidc.add(0)
-
-        if not colors:
-            if not namespace.default:
-                raise ValueError('should give at lease one color')
-            colors = (namespace.default,)
-        attrs = []
-        for c in colors:
-            attr = color_attr_mapping.get(c)
-            if attr is None:
-                raise KeyError('color "{}" is not defined'.format(c))
-            attrs.append(attr)
-
-        print(patt, gidc, attrs)
-        return (patt, gidc, attrs)
+        attr = colors2attr(colors)
+        print(patt, gidc, attr)
+        return (patt, gidc, attr)
 
     def field2stage(cond):
         fields = set()
-        colors = ()
         for idx, arg in enumerate(cond):
             m = field_form.match(arg)
             if m:
@@ -161,21 +168,13 @@ def get_stages(parser, namespace):
             else:
                 colors = cond[idx:]
                 break
+        else:
+            colors = ()
         if not fields:
             raise ValueError('should give at lease one field')
-
-        if not colors:
-            if not namespace.default:
-                raise ValueError('should give at lease one color')
-            colors = namespace.default
-
-        attrs = tuple(color_attr_mapping.get(c) for c in colors)
-        for idx, attr in enumerate(attrs):
-            if attr is None:
-                raise KeyError('color "{}" is not defined'.format(colors[idx]))
-
-        print(fields, attrs)
-        return (fields, attrs)
+        attr = colors2attr(colors)
+        print(fields, attr)
+        return (fields, attr)
 
     is_patt_args = lambda cond: type(cond[0]).__name__=='patt_arg'
     stages = tuple((patt2stage if is_patt_args(cond) else field2stage)(cond)
