@@ -148,8 +148,8 @@ def get_stages(parser, namespace):
                 raise KeyError('color "{}" is not defined'.format(c))
             attrs.append(attr)
 
-        print(patt, gidx, attrs)
-        return (patt, gidx, attrs)
+        print(patt, gidc, attrs)
+        return (patt, gidc, attrs)
 
     def field2stage(cond):
         fields = set()
