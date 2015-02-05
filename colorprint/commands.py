@@ -119,7 +119,7 @@ def get_stages(parser, namespace):
     #patt_help  = parser._actions[-1].help
 
     def patt2stage(cond):
-        gidx = set()
+        gidc = set()
         colors = ()
         for idx, arg in enumerate(cond):
             if idx==0:
@@ -130,12 +130,12 @@ def get_stages(parser, namespace):
                 group_idx = int(m.group())
                 if group_idx <= 0:
                     raise ValueError('group index should be greater than zero')
-                gidx.add(group_idx)
+                gidc.add(group_idx)
             else:
                 colors = cond[idx:]
                 break
-        if not gidx:
-            gidx.add(0)
+        if not gidc:
+            gidc.add(0)
 
         if not colors:
             if not namespace.default:
