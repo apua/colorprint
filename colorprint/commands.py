@@ -107,13 +107,12 @@ def format_color256():
 
 def get_stages(parser, namespace):
     import re
-
-    # It might no need to make `color_attr_mapping` so complicated.
     from .attributes import color_attr_mapping
 
     sep = re.compile(namespace.separator)
     field_form = re.compile(r'^((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?$')
     group_form = re.compile(r'^(?:\+|-)?\d+$')
+    color_form = re.compile(r'^(?!\d)\w*$')
 
     #color_help = parser._actions[-4].help
     #field_help = parser._actions[-3].help
@@ -127,23 +126,19 @@ def get_stages(parser, namespace):
 
         attr = ()
         for c in colors:
-            _attr = color_attr_mapping.get(c)
-            if _attr is None:
-                raise KeyError('color "{}" is not defined'.format(c))
-            #try:
-            #    _attr = color_attr_mapping[c]
-            #except KeyError:
-            #    raise KeyError('color "{}" is not defined'.format(c))
+            try:
+                _attr = color_attr_mapping[c]
+            except KeyError as e:
+                raise KeyError('color "{}" is not defined'.format(e.args[0]))
             attr += _attr
         return attr
 
+
     def patt2stage(cond):
+        patt, cond_ = re.compile(cond[0]), cond[1:]
+
         gidc = set()
-        colors = ()
-        for idx, arg in enumerate(cond):
-            if idx==0:
-                patt = re.compile(arg)
-                continue
+        for idx, arg in enumerate(cond_):
             m = group_form.match(arg)
             if m:
                 group_idx = int(m.group())
@@ -151,13 +146,19 @@ def get_stages(parser, namespace):
                     raise ValueError('group index should be greater than zero')
                 gidc.add(group_idx)
             else:
-                colors = cond[idx:]
+                colors = cond_[idx:]
                 break
+        else:
+            colors = ()
         if not gidc:
             gidc.add(0)
+
+        if any(color_form.match(c) is None for c in colors):
+            raise ValueError('something wrong with condition "%s"' % ' '.join(cond))
+
         attr = colors2attr(colors)
-        print(patt, gidc, attr)
         return (patt, gidc, attr)
+
 
     def field2stage(cond):
         fields = set()
@@ -170,15 +171,24 @@ def get_stages(parser, namespace):
                 break
         else:
             colors = ()
+
         if not fields:
             raise ValueError('should give at lease one field')
+
+        if any(color_form.match(c) is None for c in colors):
+            raise ValueError('something wrong with condition "%s"' % ' '.join(cond))
+
         attr = colors2attr(colors)
-        print(fields, attr)
         return (fields, attr)
 
-    is_patt_args = lambda cond: type(cond[0]).__name__=='patt_arg'
-    stages = tuple((patt2stage if is_patt_args(cond) else field2stage)(cond)
-                   for cond in namespace.conditions)
+    def trans2stage(cond):
+        cls = cond[0].__class__.__name__
+        if cls == 'patt_arg':
+            return patt2stage(cond)
+        else:
+            return field2stage(cond)
+
+    stages = tuple(map(trans2stage, namespace.conditions))
     return (sep, stages)
 
 
