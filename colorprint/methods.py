@@ -22,10 +22,10 @@ class ColorPrint:
         self._print(*outputs, **kwargs)
 
     def __getattr__(self, color_name):
-        vt_attr = color_attr_mapping.get(color_name)
-        if vt_attr is None:
-            raise AttributeError('Color "%s" is not defined' % vt_attr)
-        return self.__class__(self.vt_attr + vt_attr)
+        try:
+            return __class__(self.vt_attr + color_attr_mapping[color_name])
+        except KeyError as e:
+            raise AttributeError('Color "%s" is not defined' % e.args[0])
 
 
 class ColorPPrint(ColorPrint):

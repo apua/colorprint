@@ -8,7 +8,7 @@ import os
 VAR_CUSTOM  = 'COLORPRINT_CUSTOM'
 VAR_DEFAULT = 'COLORPRINT_DEFAULT'
 
-basic_mapping = {
+BASIC_MAPPING = {
     'reset':              (0,),
     'bold':               (1,),
     'bright':             (1,),
@@ -36,33 +36,34 @@ basic_mapping = {
     'bgpurple':           (45,),
     'bgcyan':             (46,),
     'bgwhite':            (47,),
-}
+    }
+
+
+def retrieve_custom_colors():
+    mapping = BASIC_MAPPING
+    var_custom = os.environ.get(VAR_CUSTOM)
+    if var_custom is not None:
+        try:
+            '''
+            Open file and parsing, then update `basic_mapping`
+            If there is not such file or paring content failed, raise warning
+            '''
+        except OSError as e:
+            Warning('can not open custom color file "%s"' % e.filename)
+        except:
+            Warning('parse custom color file failed')
+    return mapping
 
 
 class AttributeMapping(dict):
-    is_init = False
-    custom_filename = ''
+    retrieved = False
 
-    @classmethod
-    def retrieve_data(cls):
-        if cls.custom_filename:
-            pass
-        return basic_mapping
-
-    def update_if_not_init(self):
-        cls = __class__
-        orig_getattribute = object.__getattribute__
-        if not cls.is_init:
-            self_update = orig_getattribute(self, 'update')
-            self_update(cls.retrieve_data())
-            cls.is_init = True
-
-    def __getattribute__(self, *a, **k):
-        __class__.update_if_not_init(self)
-        return object.__getattribute__(self, *a, **k)
+    def __getitem__(self, key):
+        if not self.retrieved:
+            self.update(retrieve_custom_colors())
+            self.retrieved = True
+        return super().__getitem__(key)
 
 
-AttributeMapping.custom_filename = os.environ.get(VAR_CUSTOM, '')
 color_attr_mapping = AttributeMapping()
-
 default_color = os.environ.get(VAR_DEFAULT, '')
