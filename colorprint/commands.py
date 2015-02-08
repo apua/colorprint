@@ -110,9 +110,9 @@ def get_stages(parser, namespace):
     from .attributes import color_attr_mapping
 
     sep = re.compile(namespace.separator)
-    field_form = re.compile(r'^((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?$')
-    group_form = re.compile(r'^(?:\+|-)?\d+$')
-    color_form = re.compile(r'^(?!\d)\w*$')
+    field_form = re.compile(r'((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?')
+    group_form = re.compile(r'(?:\+|-)?\d+')
+    color_form = re.compile(r'(?!\d)\w*')
 
     #color_help = parser._actions[-4].help
     #field_help = parser._actions[-3].help
@@ -139,7 +139,7 @@ def get_stages(parser, namespace):
 
         gidc = set()
         for idx, arg in enumerate(cond_):
-            m = group_form.match(arg)
+            m = group_form.fullmatch(arg)
             if m:
                 group_idx = int(m.group())
                 if group_idx <= 0:
@@ -153,7 +153,7 @@ def get_stages(parser, namespace):
         if not gidc:
             gidc.add(0)
 
-        if any(color_form.match(c) is None for c in colors):
+        if any(color_form.fullmatch(c) is None for c in colors):
             raise ValueError('something wrong with condition "%s"' % ' '.join(cond))
 
         attr = colors2attr(colors)
@@ -163,7 +163,7 @@ def get_stages(parser, namespace):
     def field2stage(cond):
         fields = set()
         for idx, arg in enumerate(cond):
-            m = field_form.match(arg)
+            m = field_form.fullmatch(arg)
             if m:
                 fields.add(tuple(i and int(i) for i in m.groups()))
             else:
@@ -175,25 +175,31 @@ def get_stages(parser, namespace):
         if not fields:
             raise ValueError('should give at lease one field')
 
-        if any(color_form.match(c) is None for c in colors):
+        if any(color_form.fullmatch(c) is None for c in colors):
             raise ValueError('something wrong with condition "%s"' % ' '.join(cond))
 
         attr = colors2attr(colors)
         return (fields, attr)
 
+
     def trans2stage(cond):
         cls = cond[0].__class__.__name__
         if cls == 'patt_arg':
-            return patt2stage(cond)
+            r = patt2stage(cond)
         else:
-            return field2stage(cond)
+            r = field2stage(cond)
+        return r
+
 
     stages = tuple(map(trans2stage, namespace.conditions))
     return (sep, stages)
 
 
 def gen_coloring_func(sep, stages):
-    return '\033[38;5;38m{}\033[m'.format
+    def coloring_func(string):
+        L = tuple(map(len, sep.split(string)))
+        return '\033[38;5;38m{}\033[m'.format(string)
+    return coloring_func
 
 
 def gen_coloring_write(func, not_redirect, stdout, stderr):
