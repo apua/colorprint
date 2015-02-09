@@ -196,8 +196,25 @@ def get_stages(parser, namespace):
 
 
 def gen_coloring_func(sep, stages):
-    def coloring_func(string):
-        L = tuple(map(len, sep.split(string)))
+    def coloring_func(orig_string):
+        string = orig_string.rstrip('\r\n')
+        end = orig_string[len(string):]
+        L = tuple((m.start(), m.end()) for m in sep.finditer(string))
+
+        for stage in stages:
+            if len(stage)==3:
+                patt, grp, clr = stage
+                m = patt.search(string)
+                print(m.group(1), string[14:15])
+                for g in sorted(grp):
+                    try:
+                        print(m.start(g), m.end(g), clr)
+                    except:
+                        break
+            else:
+                fld, clr = stage
+
+        print(L)
         return '\033[38;5;38m{}\033[m'.format(string)
     return coloring_func
 
