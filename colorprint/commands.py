@@ -214,7 +214,7 @@ def get_stages(parser, namespace):
 def gen_coloring_func(stages, sep):
     def coloring_func(orig_string):
         string = orig_string.rstrip('\r\n')
-        end = orig_string[len(string):]
+        line_feed = orig_string[len(string):]
 
         def gen_field_pos(finditer, last=0):
             try:
@@ -271,7 +271,7 @@ def gen_coloring_func(stages, sep):
             states.setdefault(end,   {'add':[], 'del':[]})['del'].append(color)
         states = OrderedDict(sorted(states.items(), key=lambda t:t[0]))
 
-        colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'
+        colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'+line_feed
         return colored_form.format(*(string[s] for s in gen_slices(states)))
 
 
