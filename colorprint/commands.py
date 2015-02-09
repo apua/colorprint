@@ -136,18 +136,17 @@ def get_stages(parser, namespace):
 
     def field2slice(match):
         if ':' in match.group():
-            k = slice(*tuple(i and int(i) for i in match.groups()))
+            return slice(*tuple(i and int(i) for i in match.groups()))
+
+        i = int(match.group(1))
+        if   i > 0:
+            return slice(i-1,  i,    None)
+        elif i == 0:
+            return slice(None, None, None)
+        elif i == -1:
+            return slice(-1,   None, None)
         else:
-            i = int(match.group(1))
-            if   i > 0:
-                k = slice(i-1,  i,    None)
-            elif i == 0:
-                k = slice(None, None, None)
-            elif i == -1:
-                k = slice(-1,   None, None)
-            else:
-                k = slice(i,    i+1,  None)
-        return k
+            return slice(i,    i+1,  None)
 
 
     def patt2stage(cond):
@@ -212,6 +211,8 @@ def get_stages(parser, namespace):
 
 
 def gen_coloring_func(stages, sep):
+    from collections import OrderedDict
+
     def coloring_func(orig_string):
         string = orig_string.rstrip('\r\n')
         line_feed = orig_string[len(string):]
@@ -264,14 +265,14 @@ def gen_coloring_func(stages, sep):
         def attr2ctrl(attr):
             return '\033[{}m'.format(';'.join(map(str, attr)))
 
-        from collections import OrderedDict
         states = {}
         for start, end, color in gen_pos_color(stages):
             states.setdefault(start, {'add':[], 'del':[]})['add'].append(color)
             states.setdefault(end,   {'add':[], 'del':[]})['del'].append(color)
         states = OrderedDict(sorted(states.items(), key=lambda t:t[0]))
 
-        colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'+line_feed
+        ctrls = map(attr2ctrl, gen_attr(states))
+        colored_form = '{}'+'{}'.join(ctrls)+'{}'+line_feed
         return colored_form.format(*(string[s] for s in gen_slices(states)))
 
 
