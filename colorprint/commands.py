@@ -134,24 +134,40 @@ def get_stages(parser, namespace):
         return attr
 
 
+    def field2slice(match):
+        if ':' in match.group():
+            k = slice(*tuple(i and int(i) for i in match.groups()))
+        else:
+            i = int(match.group(1))
+            if   i > 0:
+                k = slice(i-1,  i,    None)
+            elif i == 0:
+                k = slice(None, None, None)
+            elif i == -1:
+                k = slice(-1,   None, None)
+            else:
+                k = slice(i,    i+1,  None)
+        return k
+
+
     def patt2stage(cond):
         patt, cond_ = re.compile(cond[0]), cond[1:]
 
-        gidc = set()
+        gidc = []
         for idx, arg in enumerate(cond_):
             m = group_form.fullmatch(arg)
             if m:
                 group_idx = int(m.group())
                 if group_idx <= 0:
                     raise ValueError('group index should be greater than zero')
-                gidc.add(group_idx)
+                gidc.append(group_idx)
             else:
                 colors = cond_[idx:]
                 break
         else:
             colors = ()
         if not gidc:
-            gidc.add(0)
+            gidc = [0]
 
         if any(color_form.fullmatch(c) is None for c in colors):
             raise ValueError('something wrong with condition "%s"' % ' '.join(cond))
@@ -161,11 +177,11 @@ def get_stages(parser, namespace):
 
 
     def field2stage(cond):
-        fields = set()
+        fields = []
         for idx, arg in enumerate(cond):
             m = field_form.fullmatch(arg)
             if m:
-                fields.add(tuple(i and int(i) for i in m.groups()))
+                fields.append(field2slice(m))
             else:
                 colors = cond[idx:]
                 break
@@ -192,30 +208,73 @@ def get_stages(parser, namespace):
 
 
     stages = tuple(map(trans2stage, namespace.conditions))
-    return (sep, stages)
+    return (stages, sep)
 
 
-def gen_coloring_func(sep, stages):
+def gen_coloring_func(stages, sep):
     def coloring_func(orig_string):
         string = orig_string.rstrip('\r\n')
         end = orig_string[len(string):]
-        L = tuple((m.start(), m.end()) for m in sep.finditer(string))
 
-        for stage in stages:
-            if len(stage)==3:
-                patt, grp, clr = stage
-                m = patt.search(string)
-                print(m.group(1), string[14:15])
-                for g in sorted(grp):
-                    try:
-                        print(m.start(g), m.end(g), clr)
-                    except:
-                        break
-            else:
-                fld, clr = stage
+        def gen_field_pos(finditer, last=0):
+            try:
+                m = next(finditer)
+                s,e = m.start(), m.end()
+                yield (last, s)
+                yield from gen_field_pos(finditer, e)
+            except:
+                yield (e, len(string))
 
-        print(L)
-        return '\033[38;5;38m{}\033[m'.format(string)
+
+        def gen_pos_color(stages):
+            if any(len(stage)==2 for stage in stages):
+                L = tuple(gen_field_pos(sep.finditer(string)))
+                I = tuple(range(len(L)))
+
+            for stage in stages:
+                if len(stage)==2:
+                    fields, color = stage
+                    for idx in set(sum((I[s] for s in fields),())):
+                        start, end = L[idx]
+                        yield (start, end, color)
+                else:
+                    patt, gnums, color = stage
+                    m = patt.search(string)
+                    for gn in gnums:
+                        if gn <= len(m.groups()):
+                            yield (m.start(gn), m.end(gn), color)
+
+
+        def gen_slices(states):
+            keys = list(states.keys())
+            for z in zip([0]+keys, keys+[None]):
+                yield slice(*z)
+
+
+        def gen_attr(states):
+            state = []
+            for move in states.values():
+                for color in move['del']:
+                    state.remove(color)
+                if move['add']:
+                    state.extend(move['add'])
+                yield sum(state,())
+
+
+        def attr2ctrl(attr):
+            return '\033[{}m'.format(';'.join(map(str, attr)))
+
+        from collections import OrderedDict
+        states = {}
+        for start, end, color in gen_pos_color(stages):
+            states.setdefault(start, {'add':[], 'del':[]})['add'].append(color)
+            states.setdefault(end,   {'add':[], 'del':[]})['del'].append(color)
+        states = OrderedDict(sorted(states.items(), key=lambda t:t[0]))
+
+        colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'
+        return colored_form.format(*(string[s] for s in gen_slices(states)))
+
+
     return coloring_func
 
 
@@ -251,11 +310,11 @@ def run_cmd():
             parser.print_help()
             parser.exit()
         try:
-            sep, stages = get_stages(parser, namespace)
+            stages, sep = get_stages(parser, namespace)
         except (ValueError, KeyError) as e:
             parser.error(e.args[0])
 
-        func = gen_coloring_func(sep, stages)
+        func = gen_coloring_func(stages, sep)
         write = gen_coloring_write(func, namespace.not_redirect,
                                    stdout=sys.stdout, stderr=sys.stderr)
         for line in sys.stdin:
