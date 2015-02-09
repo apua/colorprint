@@ -48,10 +48,17 @@ def retrieve_custom_colors():
             Open file and parsing, then update `basic_mapping`
             If there is not such file or paring content failed, raise warning
             '''
+            raise OSError
         except OSError as e:
-            Warning('can not open custom color file "%s"' % e.filename)
+            __import__('warnings').warn(
+                '\nCannot open custom color file "%s"' % e.filename,
+                 RuntimeWarning
+                )
         except:
-            Warning('parse custom color file failed')
+            __import__('warnings').warn(
+                '\nParse custom color file failed',
+                RuntimeWarning
+                )
     return mapping
 
 
