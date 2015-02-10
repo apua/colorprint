@@ -211,6 +211,9 @@ def get_stages(parser, namespace):
 
 
 def gen_coloring_func(stages, sep):
+    from collections import OrderedDict
+
+
     def coloring_func(orig_string):
         string = orig_string.rstrip('\r\n')
         line_feed = orig_string[len(string):]
@@ -240,6 +243,8 @@ def gen_coloring_func(stages, sep):
                 else:
                     patt, gnums, color = stage
                     m = patt.search(string)
+                    if m is None:
+                        continue
                     for gn in gnums:
                         if gn <= len(m.groups()):
                             yield (m.start(gn), m.end(gn), color)
@@ -264,7 +269,7 @@ def gen_coloring_func(stages, sep):
         def attr2ctrl(attr):
             return '\033[{}m'.format(';'.join(map(str, attr)))
 
-        from collections import OrderedDict
+
         states = {}
         for start, end, color in gen_pos_color(stages):
             states.setdefault(start, {'add':[], 'del':[]})['add'].append(color)
