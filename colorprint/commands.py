@@ -254,10 +254,10 @@ def gen_coloring_func(stages, sep):
         def gen_attr(states):
             state = []
             for move in states.values():
-                for color in move['del']:
-                    state.remove(color)
                 if move['add']:
                     state.extend(move['add'])
+                for color in move['del']:
+                    state.remove(color)
                 yield sum(state,())
 
 
@@ -270,6 +270,7 @@ def gen_coloring_func(stages, sep):
             states.setdefault(start, {'add':[], 'del':[]})['add'].append(color)
             states.setdefault(end,   {'add':[], 'del':[]})['del'].append(color)
         states = OrderedDict(sorted(states.items(), key=lambda t:t[0]))
+        print(states)
 
         colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'+line_feed
         return colored_form.format(*(string[s] for s in gen_slices(states)))
