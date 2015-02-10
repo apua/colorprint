@@ -43,6 +43,8 @@ def retrieve_custom_colors():
     mapping = BASIC_MAPPING
     var_custom = os.environ.get(VAR_CUSTOM)
     if var_custom is not None:
+        import warnings
+        warn = lambda msg: warnings.warn(msg, category=RuntimeWarning, stacklevel=3)
         try:
             '''
             Open file and parsing, then update `basic_mapping`
@@ -50,15 +52,9 @@ def retrieve_custom_colors():
             '''
             raise OSError
         except OSError as e:
-            __import__('warnings').warn(
-                '\nCannot open custom color file "%s"' % e.filename,
-                 RuntimeWarning
-                )
+            warn('Cannot open custom color file "%s"' % e.filename)
         except:
-            __import__('warnings').warn(
-                '\nParse custom color file failed',
-                RuntimeWarning
-                )
+            warn('Parse custom color file failed')
     return mapping
 
 
@@ -67,7 +63,8 @@ class AttributeMapping(dict):
 
     def __getitem__(self, key):
         if not self.retrieved:
-            self.update(retrieve_custom_colors())
+            custom_colors = retrieve_custom_colors()
+            self.update(custom_colors)
             self.retrieved = True
         return super().__getitem__(key)
 
