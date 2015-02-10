@@ -136,18 +136,17 @@ def get_stages(parser, namespace):
 
     def field2slice(match):
         if ':' in match.group():
-            k = slice(*tuple(i and int(i) for i in match.groups()))
+            return slice(*tuple(i and int(i) for i in match.groups()))
+
+        i = int(match.group(1))
+        if   i > 0:
+            return slice(i-1,  i,    None)
+        elif i == 0:
+            return slice(None, None, None)
+        elif i == -1:
+            return slice(-1,   None, None)
         else:
-            i = int(match.group(1))
-            if   i > 0:
-                k = slice(i-1,  i,    None)
-            elif i == 0:
-                k = slice(None, None, None)
-            elif i == -1:
-                k = slice(-1,   None, None)
-            else:
-                k = slice(i,    i+1,  None)
-        return k
+            return slice(i,    i+1,  None)
 
 
     def patt2stage(cond):
@@ -216,23 +215,24 @@ def gen_coloring_func(stages, sep):
         string = orig_string.rstrip('\r\n')
         line_feed = orig_string[len(string):]
 
-        def gen_field_pos(finditer, last=0):
-            try:
-                m = next(finditer)
-                s,e = m.start(), m.end()
-                yield (last, s)
-                yield from gen_field_pos(finditer, e)
-            except:
-                yield (e, len(string))
+
+        def gen_field_pos(string):
+            head = 0
+            for m in sep.finditer(string):
+                yield (head, m.start())
+                head = m.end()
+            yield (head, len(string))
 
 
         def gen_pos_color(stages):
             if any(len(stage)==2 for stage in stages):
-                L = tuple(gen_field_pos(sep.finditer(string)))
+                L = tuple(gen_field_pos(string))
                 I = tuple(range(len(L)))
 
             for stage in stages:
                 if len(stage)==2:
+                    if len(L)==1:
+                        continue
                     fields, color = stage
                     for idx in set(sum((I[s] for s in fields),())):
                         start, end = L[idx]
@@ -270,10 +270,12 @@ def gen_coloring_func(stages, sep):
             states.setdefault(start, {'add':[], 'del':[]})['add'].append(color)
             states.setdefault(end,   {'add':[], 'del':[]})['del'].append(color)
         states = OrderedDict(sorted(states.items(), key=lambda t:t[0]))
-        print(states)
 
-        colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'+line_feed
-        return colored_form.format(*(string[s] for s in gen_slices(states)))
+        if len(states)==0:
+            return orig_string
+        else:
+            colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'+line_feed
+            return colored_form.format(*(string[s] for s in gen_slices(states)))
 
 
     return coloring_func
