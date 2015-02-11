@@ -39,35 +39,44 @@ BASIC_MAPPING = {
     }
 
 
-def retrieve_custom_colors():
-    mapping = BASIC_MAPPING
-    var_custom = os.environ.get(VAR_CUSTOM)
-    if var_custom is not None:
+def retrieve_custom_colors(custom_file):
+    def warn(msg):
         import warnings
-        warn = lambda msg: warnings.warn(msg, category=RuntimeWarning, stacklevel=3)
-        try:
-            '''
-            Open file and parsing, then update `basic_mapping`
-            If there is not such file or paring content failed, raise warning
-            '''
-            raise OSError
-        except OSError as e:
-            warn('Cannot open custom color file "%s"' % e.filename)
-        except:
-            warn('Parse custom color file failed')
-    return mapping
+        return warnings.warn(msg, category=RuntimeWarning, stacklevel=3)
+
+    # If file not exist, show warning
+    # If parsing failed, show warning
+    # If there is a custom name 'default', ignore and show warning
+    try:
+        #with
+        '''
+        Open file and parsing, then update `basic_mapping`
+        If there is not such file or paring content failed, raise warning
+        '''
+        raise OSError
+        return {}
+    except OSError as e:
+        warn('Cannot open custom color file "%s"' % e.filename)
+        return {}
+    except:
+        warn('Parse custom color file failed')
+        return {}
 
 
 class AttributeMapping(dict):
-    retrieved = False
+    def __init__(self, custom_file):
+        self.retrieved = False
+        self.custom_file = custom_file
 
     def __getitem__(self, key):
         if not self.retrieved:
-            custom_colors = retrieve_custom_colors()
-            self.update(custom_colors)
+            self.update(BASIC_MAPPING)
+            if self.custom_file:
+                self.update(retrieve_custom_colors(self.custom_file))
             self.retrieved = True
         return super().__getitem__(key)
 
 
-color_attr_mapping = AttributeMapping()
 default_color = os.environ.get(VAR_DEFAULT, '')
+custom_file = os.environ.get(VAR_CUSTOM, '')
+color_attr_mapping = AttributeMapping(custom_file)
