@@ -217,23 +217,24 @@ def gen_coloring_func(stages, sep):
         string = orig_string.rstrip('\r\n')
         line_feed = orig_string[len(string):]
 
-        def gen_field_pos(finditer, last=0):
-            try:
-                m = next(finditer)
-                s,e = m.start(), m.end()
-                yield (last, s)
-                yield from gen_field_pos(finditer, e)
-            except:
-                yield (e, len(string))
+
+        def gen_field_pos(string):
+            head = 0
+            for m in sep.finditer(string):
+                yield (head, m.start())
+                head = m.end()
+            yield (head, len(string))
 
 
         def gen_pos_color(stages):
             if any(len(stage)==2 for stage in stages):
-                L = tuple(gen_field_pos(sep.finditer(string)))
+                L = tuple(gen_field_pos(string))
                 I = tuple(range(len(L)))
 
             for stage in stages:
                 if len(stage)==2:
+                    if len(L)==1:
+                        continue
                     fields, color = stage
                     for idx in set(sum((I[s] for s in fields),())):
                         start, end = L[idx]
@@ -241,6 +242,8 @@ def gen_coloring_func(stages, sep):
                 else:
                     patt, gnums, color = stage
                     m = patt.search(string)
+                    if m is None:
+                        continue
                     for gn in gnums:
                         if gn <= len(m.groups()):
                             yield (m.start(gn), m.end(gn), color)
@@ -255,10 +258,10 @@ def gen_coloring_func(stages, sep):
         def gen_attr(states):
             state = []
             for move in states.values():
-                for color in move['del']:
-                    state.remove(color)
                 if move['add']:
                     state.extend(move['add'])
+                for color in move['del']:
+                    state.remove(color)
                 yield sum(state,())
 
 
@@ -271,9 +274,11 @@ def gen_coloring_func(stages, sep):
             states.setdefault(end,   {'add':[], 'del':[]})['del'].append(color)
         states = OrderedDict(sorted(states.items(), key=lambda t:t[0]))
 
-        ctrls = map(attr2ctrl, gen_attr(states))
-        colored_form = '{}'+'{}'.join(ctrls)+'{}'+line_feed
-        return colored_form.format(*(string[s] for s in gen_slices(states)))
+        if len(states)==0:
+            return orig_string
+        else:
+            colored_form = '{}'+'{}'.join(map(attr2ctrl, gen_attr(states)))+'{}'+line_feed
+            return colored_form.format(*(string[s] for s in gen_slices(states)))
 
 
     return coloring_func
