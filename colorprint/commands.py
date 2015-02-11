@@ -28,12 +28,6 @@ def create_parser():
         help='==='*30,
         )
     parser.add_argument(
-        '--not-redirect',
-        action='store_true',
-        default=False,
-        help='...'*30,
-        )
-    parser.add_argument(
         '-D', '--default', metavar='color',
         nargs='+',
         default=default_color,
@@ -284,17 +278,6 @@ def gen_coloring_func(stages, sep):
     return coloring_func
 
 
-def gen_coloring_write(func, not_redirect, stdout, stderr):
-    if not_redirect:
-        def write(line):
-            stdout.write(line)
-            stderr.write(func(line))
-    else:
-        def write(line):
-            stdout.write(func(line))
-    return write
-
-
 def run_cmd():
     import sys
 
@@ -320,8 +303,6 @@ def run_cmd():
         except (ValueError, KeyError) as e:
             parser.error(e.args[0])
 
-        func = gen_coloring_func(stages, sep)
-        write = gen_coloring_write(func, namespace.not_redirect,
-                                   stdout=sys.stdout, stderr=sys.stderr)
+        colored = gen_coloring_func(stages, sep)
         for line in sys.stdin:
-            write(line)
+            sys.stdout.write(colored(line))
