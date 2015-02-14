@@ -25,6 +25,7 @@ BASIC_MAPPING = {
     'blue':               (34,),
     'magenta':            (35,),
     'purple':             (35,),
+    'aqua':               (36,),
     'cyan':               (36,),
     'white':              (37,),
     'bgblack':            (40,),
@@ -34,6 +35,7 @@ BASIC_MAPPING = {
     'bgblue':             (44,),
     'bgmagenta':          (45,),
     'bgpurple':           (45,),
+    'bgaqua':             (46,),
     'bgcyan':             (46,),
     'bgwhite':            (47,),
     }
