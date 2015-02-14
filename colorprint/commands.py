@@ -237,7 +237,7 @@ def gen_coloring_func(stages, sep):
                     patt, gnums, color = stage
                     for m in patt.finditer(string):
                         for gn in gnums:
-                            if gn > len(m.groups()):
+                            if gn > len(m.groups()) or m.start(gn)==m.end(gn):
                                 continue
                             yield (m.start(gn), m.end(gn), color)
 
