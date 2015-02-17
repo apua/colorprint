@@ -2,6 +2,9 @@
 VT100 Color Print
 =================
 
+The color print functions and command line tool
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 :version: 2
 :author: Apua
 
