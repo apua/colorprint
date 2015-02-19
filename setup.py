@@ -4,6 +4,11 @@ import os
 import sys
 
 def get_info_from_readme():
+    """
+    It is considered that there might be additional spaces,
+    newlines, indents, or reversed ordering in docinfo of README
+    """
+
     dirname = os.path.dirname(__file__)
     filepath = os.path.join(dirname, 'README.rst')
     content = open(filepath).read()
