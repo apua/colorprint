@@ -54,19 +54,6 @@ def create_parser():
     return parser
 
 
-def get_terminal_size():
-    "return (lines, cols)"
-    import fcntl, struct, termios
-
-    try:
-        for fd in (0,1,2):
-            v = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '*'*4))
-            if v:
-                return v
-    except OSError:
-        return (25, 80)
-
-
 def attrs_output(vt_attrs):
     attrs  = ';'.join(map(str,vt_attrs))
     string = ' '.join(map(str,vt_attrs))
