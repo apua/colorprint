@@ -105,8 +105,7 @@ At the end, you can take multi actions in the same time.
 
 .. code-block:: Sh
 
-   colorprint --separator ',' --fields 1:3 red \
-              --fields 1 3 5 -1 reverse < data.csv
+   colorprint --separator ',' --fields 1:3 red --fields 1 3 5 -1 reverse < data.csv
 
 Attention, the number of field works as AWK field number
 when greater than zero, and works as Python index or slice
