@@ -5,8 +5,8 @@ import sys
 
 def get_info_from_readme():
     """
-    It is considered that there might be additional spaces,
-    newlines, indents, or reversed ordering in docinfo of README
+    It is for considering additional spaces, newlines,
+    and unordering docinfo of README.
     """
 
     dirname = os.path.dirname(__file__)
@@ -15,11 +15,11 @@ def get_info_from_readme():
     patt = r'''
         =+\n
         (?P<title>.+)\n
-        =+\s+
+        =+\n+
         (?P<subtitle>.+)\n
-        ~+\s+
+        ~+\n+
         (?P<docinfo>
-            (:[^:]+:\s*.+\s+)
+            (:[^:]+:.+\n+)
             +)
         '''
     field = r':([^:]+):\s*(.+)'
