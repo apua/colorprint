@@ -7,7 +7,7 @@ The color print functions and command line tool
 
 :version: 2
 :author: Apua
-
+:date: 2014.12 - 2015.02
 
 `VT100 Color Print` is a tool for coloring output quickly.
 
@@ -15,9 +15,9 @@ It provides:
 
 1. A system command: :code:`colorprint`
 
-2. Two functions: :code:`print` and :code:`pprint`
+2. Two functions: :code:`print_` and :code:`pprint_`
 
-3. Flexibility of custome defined color name and default color.
+3. Flexibility of customing color.
 
 
 Installation
@@ -29,159 +29,196 @@ Installation
 Usage
 =====
 
-Functions
----------
-
-There are provided the functinos :code:`print` and :code:`pprint`.
-They work like built-in :code:`print` and :code:`pprint`, but you can
-quickly call the color names as their attributes, so that
-you can get colorful output very soon:
-
-.. code:: Python
-
-   from __future__ import print_function # for Python2.x
-
-   from colorprint import print, pprint
-   print.bright.underscore.green.bgyellow(*range(100))
-   pprint.reverse(dict(zip(range(3), 'abc')))
-
-These functions are designed for temporary use.
-It is not recommended that using them in production.
-
-Commands
+Function
 --------
 
-Customizations
---------------
+There are provided the functions :code:`print_` and :code:`pprint_`
+which work like built-in functions :code:`print` and :code:`pprint`.
 
-The built-in color names are show below - `The Built-in Color Names`_
+with attributes
+```````````````
 
-You can also define customized color names
-to environment variable  `COLORPRINT_CUSTOM`, like so:
+You can call the color names as their attributes
+to get colorful output quickly:
 
-.. code:: Sh
+.. code-block:: Python
 
-   COLORPRINT_CUSTOM='grey:(1,30), blueviolet:(38,5,57), \bgblueviolet
+   from colorprint import print_ as print, pprint_ as pprint
 
-    # format: name values
-    # eg: ESC[1;30m
-    grey = 1 30
-    # eg: ESC[38;5;57m which is 256 color foreground
-    blueviolet = 38 5 57
-    # eg: ESC[48;5;57m which is 256 color background
-    bgblueviolet = 48 5 57
-    # eg: ESC[4;1;32;48;5;57m
-    highlight = underscore bold green bgblueviolet
+   print.bright.underscore.green.bgyellow(*range(100))
+   pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
 
+with parameters
+```````````````
 
+For pythonic, it can color output with :code:`colors` parameter:
 
+.. code-block:: Python
 
-Run as command
---------------
+   colors = ['bright', 'underscore', 'green', 'bgyellow']
+   print(colors=colors, *range(100))
 
-Select fields to color:
+mix colors
+``````````
 
-    :code:`colorprint --fields 2::2 -1 yellow bggreen underscore`
+.. code-block:: Python
 
-Choose specified separator:
+   from colorprint import color_attr_mapping
 
-    :code:`colorprint --fields 5 reverse --separator ', *'`
+   C['ocean'] = C['bright'] + (38,5,27)
+   print(C['ocean']) # (1, 38, 5, 27)
+   print.ocean(*range(10))
 
-Search pattern to color::
+If there is mixed color used frequently,
+you can set it as default.
+See `Customization`_ section below.
 
-    colorprint --pattern '(?sx) (\[)(\d+)(?(1)]).*(\2)' 2 3 reverse
+Command
+-------
 
-If environment variable `COLORPRINT_DEFAULT` has been set,
-it would be used as the default color when not specify color::
+There is a command :code:`colorprint` for coloring streaming data.
+You can use it to color data line by line.
 
-    # For Sh/Bash/Zsh ; in Csh/Tcsh, use ``setenv``
-    export COLORPRINT_DEFAULT='bright white bgblue'
-    colorprint --pattern '\d+' --fields 4
+with fields
+```````````
 
-Or, you can specify default color with argument::
+In basic, you can just select which fields to color
+and which colors to use:
 
-    colorprint --pattern '\d+' --fields 4 --default bright yellow bgblue
+.. code-block:: Sh
 
-Shell is powerful enough.
-If you want type less, consider `alias` command to cut command::
+   tail -f log | colorprint --fields 1 3 5 bright yellow
 
-    alias pcf='colorprint --fields'
+You can also choose fields with slicing:
 
-Or, you can set arguments as variable::
+.. code-block:: Sh
 
-    match_number='\d+ reverse'
+   colorprint --fields 1:3 red --separator ',' < data.csv
 
-In addition, you can use every redirection feature to input file::
+Or, choose the last field since unkown how many fields of given data:
 
-    pcf 3 $match_number < $input_file_name
+.. code-block:: Sh
 
-By default, `colorprint` will delivery color information through shell redirection;
-if you only want colorfully print on terminal but redirect plain text, here is::
+   colorprint --fields -1 reverse --separator ',' < data.csv
 
-    pcf 3 --not-redirect > $output_file_name
+At the end, you can take multi actions in the same time.
 
-All arguments have short forms for convenience:
+.. code-block:: Sh
 
-    ==================   ==============
-    long argument        short argument
-    ==================   ==============
-    ``--fields``         ``-F``
-    ``--separator``      ``-S``
-    ``--pattern``        ``-P``
-    ``--default``        ``-D``
-    ==================   ==============
+   colorprint --separator ',' --fields 1:3 red \
+              --fields 1 3 5 -1 reverse < data.csv
 
+Attention, the number of field works as AWK field number
+when greater than zero, and works as Python index or slice
+in otherwise.
 
-Use in developing program
--------------------------
+with pattern
+````````````
 
-You can import `colorprint` to get colorful print tools::
+You can find strings to color with regular expression.
+It would color every matching strings:
 
-    from colorprint import print, pprint, colorlist
+.. code-block:: Sh
 
-Then every color names after print function would let
-printing string colorful::
+   cat log | colorprint --pattern '\[\d+\]' bright blue
 
-    print.yellow.bgblue(sep='\n', *mylist)
-    pprint.yellow.bgblue(mylist, depth=1)
+In addition, it supports group numbers, so that you can
+color only parts of given pattern:
 
-Sepcial color needs can be defined::
+.. code-block:: Sh
 
-   colorlist['grey'] = colorlist['yellow']+colorlist['bgblue']
-   print.grey(mydata)
+   cat log | colorprint --pattern '\[(\d+)\]' 1 bright blue
 
-.. note::
+short arguments
+```````````````
 
-   The methods are not designed Pythonic but just for convenience usage.
-   It suggests not use it in production.
+:code:`colorprint` provides short arguments for convenience.
 
-Define custom color names
--------------------------
+=============   ==============
+long argument   short argument
+=============   ==============
+`--fields`      `-F`
+`--separator`   `-S`
+`--pattern`     `-P`
+=============   ==============
 
-You can set environment variable ``COLORPRINT_CUSTOM`` to indicate
-which file contains custom color name.
+Customization
+-------------
 
-The file content like so::
+set default colors
+``````````````````
 
-    # format: name values
-    # eg: ESC[1;30m
-    grey = 1 30
-    # eg: ESC[38;5;57m which is 256 color foreground
-    blueviolet = 38 5 57
-    # eg: ESC[48;5;57m which is 256 color background
-    bgblueviolet = 48 5 57
-    # eg: ESC[4;1;32;48;5;57m
-    highlight = underscore bold green bgblueviolet
+Though `VT100 Color Print` provides `built-in color names`__,
+you could customized default color names by setting
+environment variable :code:`COLORPRINT_CUSTOM`:
 
-You can run command to test terminal color support::
+__ `The Built-in Color Names`_
 
-    colorprint --show16
-    colorprint --show256
+.. code-block:: Sh
 
-And, print the result of specified value::
+   export COLORPRINT_CUSTOM='grey=1,30 blueviolet=38,5,57'
 
-    colorprint --show16 1 30
-    colorprint --show256 48 5 57
+If there are many definitions, you can write it in multiple lines
+for getting more readibility:
+
+.. code-block:: Sh
+
+   export COLORPRINT_CUSTOM='
+        grey = 1, 30
+        blueviolet = 38, 5, 57
+        '
+
+After customization, please check the default color names
+by excuting command below:
+
+.. code-block:: Sh
+
+   colorprint --color-names
+
+find favorite colors
+````````````````````
+
+The arguments of command :code:`colorprint`,
+:code:`--show16` and :code:`--show256`,
+could show all colors.
+
+In addition, you can test mixed colors quickly as below:
+
+.. code-block:: Sh
+
+   colorprint --show bright 38 5 57
+
+customize command
+`````````````````
+
+Shell (such as Bourne Shell, Bash, ...etc) provides :code:`alias`,
+:code:`function`, and :code:`variable`.
+You can use these features to customize commmands.
+
+Here are some examples with Bourne Shell:
+
+- Since :code:`--fields` arguments always being used:
+
+  .. code-block:: Sh
+
+     alias cpf='colorprint --fields'
+     cpf 1 3 5 reverse < file
+
+- Since some colors always being used:
+
+  .. code-block:: Sh
+
+     cpfr () { colorprint --fields  "$@" reverse -S ',' ; }
+     cpfr -1 < csv_file
+
+- Since there are some highlight forms always being used:
+
+  .. code-block:: Sh
+
+     # "hl" stands for "highlight"
+     export hlpid="--pattern '\[(\d+)\]' 1 reverse"
+     export hldate="--pattern '(\d+):(\d+):(\d+)' 1 2 3 yellow"
+     colorprint $hlpid $hldate < log
 
 
 FAQ
@@ -197,17 +234,18 @@ FAQ
 
   :A: What is M$ Windows?
 
-- :Q: Why do you take the same `print` function name as built-in?
+- :Q: Why don`t you just take the function name "print" as built-in?
 
-  :A: I want to color my output temporarily,
-      so I want to use `print` function as usual and add/remove color quickly.
+  :A: It is for distinguishing original built-in function and new built one;
+      in the other side, "print" is a statement in python2.x, and it would
+      raise `SynxtaxError` when naming "print".
 
-- :Q: Why do you design color names as attributes of `print` function?
+- :Q: Why do you design color names as attributes of `print_` function?
 
   :A: It is just for convenience.
       Please consider which is shorter and easy to add/remove color below:
 
-      .. code:: Python
+      .. code-block:: Python
 
          # origin
          print(sep='\n', *range(10))
@@ -260,17 +298,17 @@ FAQ
 
   :A: Definition parser follows three rules below:
 
-        - The separator of a definition is semicolons and equal sign,
-          but you can also use space, comma, vertical bar, and hyphen.
+      - The separator of a definition is semicolons and equal sign,
+        but you can also use space, comma, vertical bar, and hyphen.
 
-        - There should be colons between definitions in one line defining way.
+      - There should be colons between definitions in one line defining way.
 
-        - The color name has to be lowercase, start with character, and contain only character/digit/underscore.
+      - The color name has to be lowercase, start with character, and contain only character/digit/underscore.
 
       Thus it should be easy to write and debug.
 
       When user takes both ways to define custom color names, "single file" will win, and we will warn user.
-      After warning, one can use `Colorprint` command-line tool to merge or remove configurations.
+      After warning, one can use `colorprint` command to merge or remove configurations.
 
 - :Q: I want to transfrom the color name defining way.
 
@@ -288,10 +326,10 @@ FAQ
          alias cpf='colorprint --fields'
          cpf 1 3 5 reverse
 
-         function cpfr { cpf "$@" reverse ; }
+         cpfr () { cpf "$@" reverse ; }
          cpfr 1 3 5
 
-         funtcion cppr { colorprint --pattern "$@" underscore ; }
+         cppr () { colorprint --pattern "$@" underscore ; }
          cppu 'patt_1|patt_2'
 
 
@@ -342,12 +380,13 @@ References
 
 - http://misc.flogisoft.com/bash/tip_colors_and_formatting
 
+
 Special Thanks
 ==============
 
 (In alphabetical order)
 
 + dv - https://github.com/wdv4758h/
-+ pi314 - https://github.com/pi314/
 + iblis - https://github.com/iblis17/
++ pi314 - https://github.com/pi314/
 + su - https://github.com/u1240976/
