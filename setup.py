@@ -36,12 +36,12 @@ setup(
     # Information from README
     author=Info.get('author'),
     version=Info.get('version'),
+    license=Info.get('copyright'),
     description=Info.get('subtitle'),
     long_description=Info.get('content'),
     # Information for PyPI
     name='VT100-ColorPrint',
     url='https://github.com/apua/colorprint',
-    license='WTFPL',
     # Information for installation
     package_dir={'': 'PY2' if sys.version_info[0]==2 else ''},
     packages=['colorprint'],
