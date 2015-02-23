@@ -8,6 +8,11 @@ The color print functions and command line tool
 :version: 2
 :author: Apua
 :date: 2014.12 - 2015.02
+:credis: In alphabetical order - 
+         `dv <https://github.com/wdv4758h/>`_,
+         `iblis <https://github.com/iblis17/>`_,
+         `pi314 <https://github.com/pi314/>`_,
+         `su <https://github.com/u1240976/>`_
 
 `VT100-ColorPrint` is a tool for coloring output quickly without
 remember `VT100 color attributes definitions`__.
@@ -340,13 +345,3 @@ References
 
 - `Termcolor <https://pypi.python.org/pypi/termcolor>`_
 
-
-Special Thanks
-==============
-
-(In alphabetical order)
-
-+ dv - https://github.com/wdv4758h/
-+ iblis - https://github.com/iblis17/
-+ pi314 - https://github.com/pi314/
-+ su - https://github.com/u1240976/
