@@ -5,15 +5,16 @@ VT100-ColorPrint
 The color print functions and command line tool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:Author: Apua
-:Version: 2
+:Version:   2
+:Author:    Apua
 :Copyright: WTFPL
-:Credits: `dv <https://github.com/wdv4758h/>`_,
-          `iblis <https://github.com/iblis17/>`_,
-          `pi314 <https://github.com/pi314/>`_,
-          `su <https://github.com/u1240976/>`_
-          (in alphabetical order)
-:Date: 2014.12 - 2015.02
+:Date:      2014.12 - 2015.02
+:Url:       https://github.com/apua/colorprint
+:Credits:   `dv <https://github.com/wdv4758h/>`_,
+            `iblis <https://github.com/iblis17/>`_,
+            `pi314 <https://github.com/pi314/>`_,
+            `su <https://github.com/u1240976/>`_
+            (in alphabetical order)
          
 
 `VT100-ColorPrint` is a tool for coloring output quickly without
