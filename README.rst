@@ -1,6 +1,6 @@
-=================
-VT100 Color Print
-=================
+================
+VT100-ColorPrint
+================
 
 The color print functions and command line tool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9,7 +9,10 @@ The color print functions and command line tool
 :author: Apua
 :date: 2014.12 - 2015.02
 
-`VT100 Color Print` is a tool for coloring output quickly.
+`VT100-ColorPrint` is a tool for coloring output quickly without
+remember `VT100 color attributes definitions`__.
+
+__ `References`_
 
 It provides:
 
@@ -51,7 +54,7 @@ to get colorful output quickly:
 with parameters
 ```````````````
 
-For pythonic, it can color output with :code:`colors` parameter:
+For pythonic, it can color output with parameter :code:`colors`:
 
 .. code-block:: Python
 
@@ -147,7 +150,7 @@ Customization
 set default colors
 ``````````````````
 
-Though `VT100 Color Print` provides `built-in color names`__,
+Though `VT100-ColorPrint` provides `built-in color names`__,
 you could customized default color names by setting
 environment variable :code:`COLORPRINT_CUSTOM`:
 
@@ -172,7 +175,7 @@ by excuting command below:
 
 .. code-block:: Sh
 
-   colorprint --color-names
+   colorprint --show-names
 
 find favorite colors
 ````````````````````
@@ -223,113 +226,55 @@ Here are some examples with Bourne Shell:
 FAQ
 ===
 
-- :Q: Why take the PyPI name so long?
+- :Q: The name `VT100-ColorPrint` is verbose.
+      Why not take `ColorPrint`?
+  :A: Because it has been taken.
+      See https://pypi.python.org/pypi/colorprint/0.1
 
-  :A: I prefer to use "ColorPrint", but it has been taken.
-      However, that's OK, I think the current name is explicit
-      to show that "it supports VT100".
-
-- :Q: Can`t it run on M$ Windows?
-
+- :Q: It seems like it cannot run on M$ Windows?
   :A: What is M$ Windows?
 
-- :Q: Why don`t you just take the function name "print" as built-in?
+- :Q: About the functions :code:`print_` and :code:`pprint_`,
+      I think it is not necessary to use it on product.
+  :A: That`s right. These functions are used for colorful output
+      temporary. It is useful when checking output.
+      With the product code, it is recommended to define a function
+      or assign variables for your special purpose.
 
-  :A: It is for distinguishing original built-in function and new built one;
-      in the other side, "print" is a statement in python2.x, and it would
-      raise `SynxtaxError` when naming "print".
+- :Q: How about take "print" as the function name of :code:`print_`
+      instead of "print\_"?
+  :A: It should take different names between two different
+      functions. And, Python2.x treats :code:`print` as statement,
+      so that it is easy to make mistake with naming "print".
 
-- :Q: Why do you design color names as attributes of `print_` function?
+- :Q: Why does it provide functions with color attributes?
+      Is it not enough that providing functions with parameter
+      :code:`colors`?
+  :A: Using attributes would be shorter and easy to edit.
 
-  :A: It is just for convenience.
-      Please consider which is shorter and easy to add/remove color below:
+- :Q: When writing with color attributes, why should we put "print"
+      at the start of line but the end?
+  :A: After discussion, we think it is intuitive to put it at
+      the start of line.
+      By the way, the editing speed of both are almost the same
+      with Vim.
 
-      .. code-block:: Python
+- :Q: Are the built-in 16 colors and background colors not enough?
+  :A: No. The displays of colors on different terminal emulaters
+      might be different, so it is necessary to provide
+      customization ability.
 
-         # origin
-         print(sep='\n', *range(10))
-         # colored
-         print.red.reverse(sep='\n', *range(10))
-         print(sep='\n', colors=['red', 'reverse'], *range(10))
+- :Q: I am not sure if my customization works or not.
+  :A: Try :code:`colorprint --show-names`.
 
-      Opposite, the function with argument `colors` is for explicit using.
+- :Q: Does the customization work on the functions, too?
+  :A: Yes.
 
-- :Q: What is the purpose of the command-line tool?
-
-  :A: It is designed as a light weight tool for coloring line by line.
-      It is useful such as with `tail -f $LOG` or drawing some text temporarily.
-
-      In most cases, for example, `git log` and `date`, are not appropriate colored line by line.
-      Instead, they would provide `format` option to color easily.
-
-- :Q: How about providing `--mode` option in command-line tool,
-      which is used like `--mode=httpd` and `httpd` is work for some user defined pattern?
-      It could increase *reusability*.
-
-  :A: Since it is just a light weight tool, it is no need to consider reusability.
-
-      To design `--mode` support is very difficult,
-      because there are many new things should be considered.
-      For example, the same color names might not have same display in different terminal emulater,
-      and user might want to use different color names,
-      however, there might be more than one pattern and more than one color,
-      thus it is complicated to decide which pattern takes which color.
-
-      Compare with reusability, making the tool flexible is more important.
-
-- :Q: I think the color names are too verbose in shell.
-
-  :A: You can define customized color names.
-
-- :Q: I am confused what color names I definded and which color names are built-in.
-
-  :A: There is a argument of command could show that.
-
-- :Q: Why are there two ways to write custom definitions?
-
-  :A: If user has less definitions, they can just be combined to one line, like `GREP_COLORS` or `PATH`.
-      We consider "Flat is better than nested", we think it is no need to expand it as single file.
-
-      However, if there are more definitions enough, we may consider "Sparse is better than dense",
-      and want to collected it as a single file.
-
-- :Q: I worry about typo in customization, and a mistake that taking both defining ways in the same time.
-
-  :A: Definition parser follows three rules below:
-
-      - The separator of a definition is semicolons and equal sign,
-        but you can also use space, comma, vertical bar, and hyphen.
-
-      - There should be colons between definitions in one line defining way.
-
-      - The color name has to be lowercase, start with character, and contain only character/digit/underscore.
-
-      Thus it should be easy to write and debug.
-
-      When user takes both ways to define custom color names, "single file" will win, and we will warn user.
-      After warning, one can use `colorprint` command to merge or remove configurations.
-
-- :Q: I want to transfrom the color name defining way.
-
-  :A: There is an argument of command to do it.
-
-- :Q: I don`t care about beautiful colors or complex pattern matching,
-      I want to focus on which fields I care about.
-
-  :A: You can use `alias` or `function` which is according to your shell. For example:
-
-      .. code:: Bash
-
-         #!/bin/bash
-
-         alias cpf='colorprint --fields'
-         cpf 1 3 5 reverse
-
-         cpfr () { cpf "$@" reverse ; }
-         cpfr 1 3 5
-
-         cppr () { colorprint --pattern "$@" underscore ; }
-         cppu 'patt_1|patt_2'
+- :Q: Why not provide a configuration file like
+      :code:`~/.colorprint`?
+  :A: It is only used to define colors.
+      *Flat is better than nested*, there is no need to write it
+      in specified file.
 
 
 The Built-in Color Names
@@ -367,6 +312,16 @@ bgpurple [0]_      45
 bgaqua [0]_        46
 bgcyan             46
 bgwhite            47
+bgbblack           100
+bgbred             101
+bgbgreen           102
+bgbyellow          103
+bgbblue            104
+bgbmagenta         105
+bgbpurple [0]_     105
+bgbaqua [0]_       106
+bgbcyan            106
+bgbwhite           107
 ================   ======
 
 .. [0] A custom color name.
@@ -375,9 +330,15 @@ bgwhite            47
 References
 ==========
 
-- http://www.termsys.demon.co.uk/vtansi.htm#colors
+- `Display Attributes of ANSI/VT100 Terminal Control Escape Sequences <http://www.termsys.demon.co.uk/vtansi.htm#colors>`_
 
-- http://misc.flogisoft.com/bash/tip_colors_and_formatting
+- `FLOZz' MISC » bash:tip_colors_and_formatting <http://misc.flogisoft.com/bash/tip_colors_and_formatting>`_
+
+- `Colorex <https://bitbucket.org/linibou/colorex/wiki/Home>`_
+
+- `Colored <https://pypi.python.org/pypi/colored>`_
+
+- `Termcolor <https://pypi.python.org/pypi/termcolor>`_
 
 
 Special Thanks
