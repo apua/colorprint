@@ -49,22 +49,22 @@ which work like built-in functions :code:`print` and :code:`pprint`.
 with attributes
 ```````````````
 
-You can call the color names as their attributes
+You can call the color names as their attributes (i.e. members)
 to get colorful output quickly:
 
-.. code-block:: Python
+.. code:: Python
 
-   from colorprint import print_ as print, pprint_ as pprint
-
-   print.bright.underscore.green.bgyellow(*range(100))
-   pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
+   >>> from colorprint import print_ as print, pprint_ as pprint
+   >>> print.bright.underscore.green.bgyellow('abc', 123)
+   [1;4;32;43mabc[m [1;4;32;43m123[m
+   >>> pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
 
 with parameters
 ```````````````
 
 For pythonic, it can color output with parameter :code:`colors`:
 
-.. code-block:: Python
+.. code:: Python
 
    colors = ['bright', 'underscore', 'green', 'bgyellow']
    print(colors=colors, *range(100))
@@ -72,13 +72,15 @@ For pythonic, it can color output with parameter :code:`colors`:
 mix colors
 ``````````
 
-.. code-block:: Python
+.. code:: Python
 
-   from colorprint import color_attr_mapping
-
-   C['ocean'] = C['bright'] + (38,5,27)
-   print(C['ocean']) # (1, 38, 5, 27)
-   print.ocean(*range(10))
+   >>> from colorprint import print_ as print
+   >>> from colorprint import color_attr_mapping
+   >>> color_attr_mapping['ocean'] = color_attr_mapping['bright'] + (38,5,27)
+   >>> color_attr_mapping['ocean']
+   (1, 38, 5, 27)
+   >>> print.ocean('abc', 123)
+   [1;38;5;27mabc[m [1;38;5;27m123[m
 
 If there is mixed color used frequently,
 you can set it as default.
