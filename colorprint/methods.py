@@ -40,7 +40,7 @@ class ColorPrint:
 
     def __getattr__(self, color_name):
         try:
-            return __class__(self.vt_attr + color_attr_mapping[color_name])
+            return self.__class__(self.vt_attr + color_attr_mapping[color_name])
         except KeyError as e:
             raise AttributeError('Color "%s" is not defined' % e.args[0])
 
