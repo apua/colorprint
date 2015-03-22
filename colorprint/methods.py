@@ -7,7 +7,7 @@ from .attributes import color_attr_mapping
 
 def colorform(vt_attr):
     attrs = ';'.join(map(str, vt_attr))
-    return '\033[{}m{{}}\033[m'.format(attrs)
+    return '\x1b[{}m{{}}\x1b[m'.format(attrs)
 
 
 class ColorPrint:

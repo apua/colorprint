@@ -57,7 +57,7 @@ def create_parser():
 def attrs_output(vt_attrs):
     attrs  = ';'.join(map(str,vt_attrs))
     string = ' '.join(map(str,vt_attrs))
-    return '\033[{}m{:8}\033[m'.format(attrs, string)
+    return '\x1b[{}m{:8}\x1b[m'.format(attrs, string)
 
 
 def format_color(vt_attrs):
@@ -246,7 +246,7 @@ def gen_coloring_func(stages, sep):
 
 
         def attr2ctrl(attr):
-            return '\033[{}m'.format(';'.join(map(str, attr)))
+            return '\x1b[{}m'.format(';'.join(map(str, attr)))
 
         states = {}
         for start, end, color in gen_pos_color(stages):
