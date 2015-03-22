@@ -52,11 +52,14 @@ class ColorPrintMethodsTest(TestCase):
         self.assertEqual(output, '1-2-3')
 
     def test_with_attributes(self):
-        program = "print.red.bgdark(123, end='')"
+        program = "print.red.bgred(1,2, end='')"
+        output = dump_output(program)
+        self.assertEqual(output, '\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m')
 
     def test_with_parameters(self):
-        colors = ['bright', 'underscore', 'green', 'bgyellow']
-        program = "print(1,2, colors={colors})".format(**vars())
+        program = "print(1,2, colors=('red','bgred'), end='')"
+        output = dump_output(program)
+        self.assertEqual(output, '\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m')
 
     @skip('undefined behavior')
     def test_with_both_features(self):
@@ -71,5 +74,5 @@ class ColorPrintMethodsTest(TestCase):
         program_2 = "print.fire(1)"
         output_1 = dump_output(program_1)
         output_2 = dump_output(program_2)
-        self.assertEqual(output_1, '\033[1;38;5;27m1\033[m\n')
-        self.assertEqual(output_2, '\033[31;103m1\033[m\n')
+        self.assertEqual(output_1, '\x1b[1;38;5;27m1\x1b[m\n')
+        self.assertEqual(output_2, '\x1b[31;103m1\x1b[m\n')

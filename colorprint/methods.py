@@ -1,6 +1,6 @@
-"""
-Provide `print` and `pprint` methods.
-"""
+'''
+Provide `print_` and `pprint_` methods
+'''
 
 from .attributes import color_attr_mapping
 
@@ -11,15 +11,32 @@ def colorform(vt_attr):
 
 
 class ColorPrint:
-    _print  = print
-
     def __init__(self, vt_attr=()):
         self.vt_attr = vt_attr
 
-    def __call__(self, *args, **kwargs):
-        colored = colorform(self.vt_attr).format
-        outputs = map(colored, map(str, args))
-        self._print(*outputs, **kwargs)
+    def __call__(self, *values, sep=None, end=None, file=None, flush=None, **kwargs):
+        try:
+            invalid_key = next(k for k in kwargs if k!='colors')
+            raise TypeError("'%s' is an invalid keyword argument for this function" % invalid_key)
+        except StopIteration:
+            pass
+
+        if self.vt_attr and 'colors' in kwargs:
+            raise TypeError('Do not set colors in both attributes and parameters way')
+        elif self.vt_attr:
+            coloring = colorform(self.vt_attr).format
+            values_ = map(coloring, map(str, values))
+        elif 'colors' in kwargs:
+            vt_attr = sum((color_attr_mapping[k] for k in kwargs['colors']), ())
+            coloring = colorform(vt_attr).format
+            values_ = map(coloring, map(str, values))
+        else:
+            values_ = values
+
+        locals_ = locals()
+        kwargs_ = {key: locals_[key] for key in ('sep','end','file','flush') if locals_[key] is not None}
+
+        return print(*values_, **kwargs_)
 
     def __getattr__(self, color_name):
         try:
@@ -54,5 +71,5 @@ class ColorPPrint(ColorPrint):
         printer.pprint(object)
 
 
-print  = ColorPrint()
-pprint = ColorPPrint()
+print_  = ColorPrint()
+pprint_ = ColorPPrint()
