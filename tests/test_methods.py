@@ -61,10 +61,14 @@ class ColorPrintMethodsTest(TestCase):
         output = dump_output(program)
         self.assertEqual(output, '\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m')
 
-    @skip('undefined behavior')
+    def test_with_invalid_color_names(self):
+        program = "print.xxx(1)"
+        self.assertRaises(AttributeError, dump_output, program)
+
+    #@skip('undefined behavior')
     def test_with_both_features(self):
         program = "print.red(1, colors={'red'})"
-        self.assertRaises(..., dump_output, program)
+        self.assertRaises(TypeError, dump_output, program)
 
     def test_mapping_updating(self):
         color_attr_mapping['ocean'] = \
