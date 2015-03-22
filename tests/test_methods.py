@@ -71,5 +71,5 @@ class ColorPrintMethodsTest(TestCase):
         program_2 = "print.fire(1)"
         output_1 = dump_output(program_1)
         output_2 = dump_output(program_2)
-        self.assertEqual(output_1, '\x1b[1;38;5;27m1\x1b[m\n')
-        self.assertEqual(output_2, '\x1b[31;103m1\x1b[m\n')
+        self.assertEqual(output_1, '\033[1;38;5;27m1\033[m\n')
+        self.assertEqual(output_2, '\033[31;103m1\033[m\n')
