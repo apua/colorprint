@@ -65,12 +65,14 @@ class ColorPPrint(ColorPrint):
                 else:
                     super().write(self.coloring(s))
 
+            # Re-define behavior of :method:`close`,
+            # since PrettyPrinter object will be destroyed after return,
+            # and the wrappered stream would be deleted (and, closed) together.
             def close(self):
                 if self.buffer is not None and not self.closed:
                     try:
                         self.flush()
                     finally:
-                        # don`t close buffer since it is just a wrapper
                         #self.buffer.close()
                         pass
 
