@@ -65,6 +65,16 @@ class ColorPPrint(ColorPrint):
                 else:
                     super().write(self.coloring(s))
 
+            def close(self):
+                if self.buffer is not None and not self.closed:
+                    try:
+                        self.flush()
+                    finally:
+                        # don`t close buffer since it is just a wrapper
+                        #self.buffer.close()
+                        pass
+
+
         try:
             invalid_key = next(k for k in kwargs if k!='colors')
             raise TypeError("'%s' is an invalid keyword argument for this function" % invalid_key)
