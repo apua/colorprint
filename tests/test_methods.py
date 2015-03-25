@@ -1,82 +1,99 @@
-'''
-# instantiate test
-print(sep='\n', *attr_names.items())
-pprint(attr_names)
-# method generating test
-print(
-    print.values,
-    print.red.values,
-    print.red.bgcyan.values,
-    sep='\n')
-# print function running test
-print(' ', sep=' - ', *range(10))
-print.red(' ', sep=' - ', *range(10))
-print.red.bgcyan(' ', sep=' - ', *range(10))
-
-rec = []; rec.append(rec)
-obj = ([0,1,{2:"3 33 333",4:{5, lambda:0}}],rec)
-print.reverse(obj)
-pprint.reverse(obj, indent=3, width=1)
-
-# exception test
-print.kkk
-'''
-
 from os.path import abspath, join
 import sys
+import unittest
 
 source_root = abspath(join(__file__, '..', '..'))
 sys.path.append(source_root)
 
 
-from unittest import TestCase, skip
-from colorprint import (print_ as print,
-                        pprint_ as pprint,
-                        color_attr_mapping)
+from colorprint import (color_attr_mapping as ColorMap,
+                        print_ as print, pprint_ as pprint)
 
 
 def dump_output(program):
     from contextlib import redirect_stdout
-    from io import StringIO
+    from _pyio import StringIO
 
-    buff = StringIO()
-    with redirect_stdout(buff):
+    with redirect_stdout(StringIO()) as buff:
         exec(program)
-    return buff.getvalue()
+        return buff.getvalue()
 
 
-class ColorPrintMethodsTest(TestCase):
+class PrintMethodTest(unittest.TestCase):
     def test_no_effect(self):
-        program = "print(1,2,3, sep='-', end='')"
-        output = dump_output(program)
-        self.assertEqual(output, '1-2-3')
+        program = 'print(1,2,3, sep=\'-\', end=\'\')'
+        expect_result = '1-2-3'
+        self.assertEqual(dump_output(program), expect_result)
 
     def test_with_attributes(self):
-        program = "print.red.bgred(1,2, end='')"
-        output = dump_output(program)
-        self.assertEqual(output, '\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m')
+        program = 'print.red.bgred(1,2, end=\'\')'
+        expect_result = '\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m'
+        self.assertEqual(dump_output(program), expect_result)
 
     def test_with_parameters(self):
-        program = "print(1,2, colors=('red','bgred'), end='')"
-        output = dump_output(program)
-        self.assertEqual(output, '\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m')
+        program = 'print(1,2, colors=(\'red\',\'bgred\'), end=\'\')'
+        expect_result ='\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m' 
+        self.assertEqual(dump_output(program), expect_result)
+
+    def test_no_side_effect(self):
+        program = 'print.bgred(1); print.blue(1)'
+        expect_result = '\x1b[41m1\x1b[m\n\x1b[34m1\x1b[m\n'
+        self.assertEqual(dump_output(program), expect_result)
 
     def test_with_invalid_color_names(self):
-        program = "print.xxx(1)"
+        program = 'print.xxx(1)'
         self.assertRaises(AttributeError, dump_output, program)
 
-    #@skip('undefined behavior')
     def test_with_both_features(self):
-        program = "print.red(1, colors={'red'})"
+        program = 'print.red(1, colors={\'red\'})'
         self.assertRaises(TypeError, dump_output, program)
 
+
+class PPrintMethodTest(unittest.TestCase):
+    def test_no_effect(self):
+        program = 'pprint((1,2), width=3)'
+        expect_result = '(1,\n 2)\n'
+        self.assertEqual(dump_output(program), expect_result)
+
+    def test_with_attributes(self):
+        from textwrap import dedent
+        program = 'pprint.red.bgred((1,2), width=3)'
+        expect_result = dedent('''
+            \x1b[31;41m(\x1b[m\x1b[31;41m\x1b[m\x1b[31;41m1\x1b[m\x1b[31;41m,\x1b[m
+             \x1b[31;41m2\x1b[m\x1b[31;41m)\x1b[m\n
+            ''')[1:-1]
+        self.assertEqual(dump_output(program), expect_result)
+
+    def test_with_parameters(self):
+        from textwrap import dedent
+        program = 'pprint((1,2), colors=(\'red\',\'bgred\'), width=3)'
+        expect_result = dedent('''
+            \x1b[31;41m(\x1b[m\x1b[31;41m\x1b[m\x1b[31;41m1\x1b[m\x1b[31;41m,\x1b[m
+             \x1b[31;41m2\x1b[m\x1b[31;41m)\x1b[m\n
+            ''')[1:-1]
+        self.assertEqual(dump_output(program), expect_result)
+
+    def test_no_side_effect(self):
+        program = 'pprint.bgred(1); pprint.blue(1)'
+        expect_result = '\x1b[41m1\x1b[m\n\x1b[34m1\x1b[m\n'
+        self.assertEqual(dump_output(program), expect_result)
+
+    def test_with_invalid_color_names(self):
+        program = 'pprint.xxx(1)'
+        self.assertRaises(AttributeError, dump_output, program)
+
+    def test_with_both_features(self):
+        program = 'pprint.red(1, colors={\'red\'})'
+        self.assertRaises(TypeError, dump_output, program)
+
+
+class ColorMapppingTest(unittest.TestCase):
     def test_mapping_updating(self):
-        color_attr_mapping['ocean'] = \
-            color_attr_mapping['bright'] + (38, 5, 27)
-        color_attr_mapping['fire'] = (31, 103)
-        program_1 = "print.ocean(1)"
-        program_2 = "print.fire(1)"
-        output_1 = dump_output(program_1)
-        output_2 = dump_output(program_2)
-        self.assertEqual(output_1, '\x1b[1;38;5;27m1\x1b[m\n')
-        self.assertEqual(output_2, '\x1b[31;103m1\x1b[m\n')
+        ColorMap['ocean'] = ColorMap['bright'] + (38, 5, 27)
+        ColorMap['fire'] = (31, 103)
+        program_1 = 'print.ocean(1)'
+        program_2 = 'print.fire(1)'
+        expect_result_1 = '\x1b[1;38;5;27m1\x1b[m\n'
+        expect_result_2 = '\x1b[31;103m1\x1b[m\n'
+        self.assertEqual(dump_output(program_1), expect_result_1)
+        self.assertEqual(dump_output(program_2), expect_result_2)
