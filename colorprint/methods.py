@@ -61,9 +61,16 @@ class ColorPPrint(ColorPrint):
                 m = self.patt.match(s)
                 if m is not None:
                     a, b, c = m.groups()
-                    super().write((a and self.coloring(a)) + b + (c and self.coloring(c)))
+                    colored = (a and self.coloring(a)) + b + (c and self.coloring(c))
                 else:
-                    super().write(self.coloring(s))
+                    colored = self.coloring(s)
+
+                if isinstance(self.buffer, io.BufferedWriter):
+                    write = super().write
+                else:
+                    write = self.buffer.write
+
+                return write(colored)
 
             # Re-define behavior of :method:`close`,
             # since PrettyPrinter object will be destroyed after return,
@@ -94,7 +101,14 @@ class ColorPPrint(ColorPrint):
             coloring = lambda x:x
 
         printer = pprint.PrettyPrinter(stream=stream, indent=indent, width=width, depth=depth, compact=compact)
-        printer._stream = ColoringTextIOWrapper(printer._stream.buffer, coloring=coloring)
+
+        # Some class such as `io.StringIO` has no `buffer` attribute
+        # and it is no need to encode/decode
+        # see :module:`_pyio.py`
+        if isinstance(printer._stream, io.BufferedWriter):
+            printer._stream = ColoringTextIOWrapper(printer._stream.buffer, coloring=coloring)
+        else:
+            printer._stream = ColoringTextIOWrapper(printer._stream, coloring=coloring)
 
         return printer.pprint(values)
 

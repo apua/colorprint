@@ -16,7 +16,7 @@ from colorprint import (color_attr_mapping as ColorMap,
 
 def dump_output(program):
     from contextlib import redirect_stdout
-    from _pyio import StringIO
+    from io import StringIO
 
     with redirect_stdout(StringIO()) as buff:
         exec(program)

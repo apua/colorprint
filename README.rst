@@ -58,6 +58,7 @@ to get colorful output quickly:
    >>> print.bright.underscore.green.bgyellow('abc', 123)
    [1;4;32;43mabc[m [1;4;32;43m123[m
    >>> pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
+   [7m{0: 'a', 1: 'b', 2: 'c'}[m
 
 with parameters
 ```````````````
