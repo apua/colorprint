@@ -71,3 +71,5 @@ https://bitbucket.org/linibou/colorex/wiki/Home
 .. 7. Add attributes feature to support `update` ...etc
 
 .. 8. Is there a way to get
+
+.. add testing ways to README
