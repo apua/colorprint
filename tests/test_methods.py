@@ -7,7 +7,7 @@ import unittest
 
 from os.path import abspath, join
 
-package_dir = 'PY2' if sys.version_info[0]==2 else ''
+package_dir = 'PY2' if sys.version_info[0]==2 else '.'
 os.chdir(path.abspath(path.join(__file__, '..', '..', package_dir)))
 
 from colorprint import (color_attr_mapping as ColorMap,
