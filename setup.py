@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 import re
 import os
 import sys
@@ -42,7 +42,8 @@ setup(
     name=Info.get('title'),
     url=Info.get('url'),
     # Information for installation
-    package_dir={'': 'PY2' if sys.version_info[0]==2 else ''},
+    package_dir={'': 'PY2' if sys.version_info[0]==2 else '.'},
     packages=['colorprint'],
     scripts=['scripts/colorprint'],
+    test_suite='tests',
     )
