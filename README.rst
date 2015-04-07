@@ -55,8 +55,8 @@ to get colorful output quickly:
 .. code:: Python
 
    >>> from colorprint import print_ as print, pprint_ as pprint
-   >>> print.bright.underscore.green.bgyellow('abc', 123)
-   [1;4;32;43mabc[m [1;4;32;43m123[m
+   >>> print.reverse.underscore('abc', 123)
+   [7;4mabc[m [7;4m123[m
    >>> pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
    [7m{0: 'a', 1: 'b', 2: 'c'}[m
 
@@ -67,8 +67,9 @@ For pythonic, it can color output with parameter :code:`colors`:
 
 .. code:: Python
 
-   colors = ['bright', 'underscore', 'green', 'bgyellow']
-   print(colors=colors, *range(100))
+   >>> colors = ['reverse', 'underscore']
+   >>> print(colors=colors, *range(3))
+   [7;4m0[m [7;4m1[m [7;4m2[m
 
 mix colors
 ``````````
