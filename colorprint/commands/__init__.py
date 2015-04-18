@@ -86,7 +86,7 @@ def format_color256():
     return '\n'.join('  '.join(strings[i:i+8]) for i in range(0,256,8))+'\n'
 
 
-def get_stages(parser, namespace):
+def get_stages(namespace):
     import re
     from ..attributes import color_attr_mapping
 
@@ -94,10 +94,6 @@ def get_stages(parser, namespace):
     field_form = re.compile(r'((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?')
     group_form = re.compile(r'(?:\+|-)?\d+')
     color_form = re.compile(r'(?!\d)\w*')
-
-    #color_help = parser._actions[-4].help
-    #field_help = parser._actions[-3].help
-    #patt_help  = parser._actions[-1].help
 
     def colors2attr(colors):
         if not colors:
@@ -264,31 +260,37 @@ def gen_coloring_func(stages, sep):
     return coloring_func
 
 
-def run_cmd():
-    import sys
-
-    parser = create_parser()
+def main(parser, input_stream, output_stream):
     namespace = parser.parse_args()
+    print_help = parser.print_help
+    error_handler = parser.error
 
     if   namespace.show16 is not None:
         if namespace.show16:
-            parser.exit(message=format_color(namespace.show16))
+            output_stream.write(format_color(namespace.show16))
         else:
-            parser.exit(message=format_color16())
+            output_stream.write(format_color16())
     elif namespace.show256 is not None:
         if namespace.show256:
-            parser.exit(message=format_color(namespace.show256))
+            output_stream.write(format_color(namespace.show256))
         else:
-            parser.exit(message=format_color256())
+            output_stream.write(format_color256())
     else:
         if namespace.conditions is None:
-            parser.print_help()
-            parser.exit()
+            print_help()
         try:
-            stages, sep = get_stages(parser, namespace)
+            stages, sep = get_stages(namespace)
         except (ValueError, KeyError) as e:
-            parser.error(e.args[0])
+            error_handler(e.args[0])
 
         colored = gen_coloring_func(stages, sep)
-        for line in sys.stdin:
-            sys.stdout.write(colored(line))
+        for line in input_stream:
+            output_stream.write(colored(line))
+
+
+def run_cmd():
+    import sys
+
+    main(parser=create_parser(),
+         input_stream=sys.stdin,
+         output_stream=sys.stdout)
