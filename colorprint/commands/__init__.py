@@ -4,10 +4,19 @@ def create_parser():
     from ..attributes import default_color
     from ..info import __version__
 
+    usage = '''
+       ColorPrint [-h] [--version]
+                  [--show16 [attr [attr ...]] | --show256[attr [attr ...]]]
+                  [-D color [color ...]]
+                  [-F condition [condition ...]] [-S sep]
+                  [-P condition [condition ...]]
+    '''
+
     parser = argparse.ArgumentParser(
         prog='ColorPrint',
         description='...(give example and how conditions work)',
         epilog='...'*30,
+        usage=usage.strip(),
         )
     parser.add_argument(
         '--version',
