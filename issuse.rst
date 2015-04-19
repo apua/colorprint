@@ -73,3 +73,5 @@ https://bitbucket.org/linibou/colorex/wiki/Home
 .. 8. Is there a way to get
 
 .. add testing ways to README
+
+.. error handler 也要修改名詞
