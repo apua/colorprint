@@ -5,6 +5,10 @@ Provide `print_` and `pprint_` methods
 from .attributes import color_attr_mapping
 
 
+def identity(x):
+    return x
+
+
 def colorform(vt_attr):
     attrs = ';'.join(map(str, vt_attr))
     return '\x1b[{}m{{}}\x1b[m'.format(attrs)
@@ -29,7 +33,7 @@ class ColorPrint:
             vt_attr = sum((color_attr_mapping[k] for k in kwargs['colors']), ())
             coloring = colorform(vt_attr).format
         else:
-            coloring = lambda x:x
+            coloring = identity
 
         values_ = map(coloring, map(str, values))
         locals_ = locals()
@@ -52,7 +56,7 @@ class ColorPPrint(ColorPrint):
         import re
 
         class ColoringTextIOWrapper(io.TextIOWrapper):
-            def __init__(self, *a, coloring=lambda x:x, **kw):
+            def __init__(self, *a, coloring=identity, **kw):
                 super().__init__(*a, **kw)
                 self.patt = re.compile(r'^(,?)(\n\ *)(.*)$')
                 self.coloring = coloring
@@ -98,7 +102,7 @@ class ColorPPrint(ColorPrint):
             vt_attr = sum((color_attr_mapping[k] for k in kwargs['colors']), ())
             coloring = colorform(vt_attr).format
         else:
-            coloring = lambda x:x
+            coloring = identity
 
         printer = pprint.PrettyPrinter(stream=stream, indent=indent, width=width, depth=depth, compact=compact)
 

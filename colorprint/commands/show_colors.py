@@ -63,11 +63,11 @@ def get_color_info(arg16, arg256):
 
 def gen_const_colors():
     def ranges2lines(ranges, trans):
-        range2line = lambda r: attrs2line(*map(trans, r))
+        def range2line(r): return attrs2line(*map(trans, r))
         return ''.join(map(range2line, ranges))
 
-    ranges2lines16  = lambda *rs: ranges2lines(rs, lambda v:(v,))
-    ranges2lines256 = lambda *rs: ranges2lines(rs, lambda v:(38,5,v))
+    def ranges2lines16(*rs):  return ranges2lines(rs, lambda v:(v,))
+    def ranges2lines256(*rs): return ranges2lines(rs, lambda v:(38,5,v))
 
     # 16 colors
     options    = ranges2lines16((0,1,2,4,5,7,8))
