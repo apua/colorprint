@@ -15,7 +15,6 @@ The color print functions and command line tool
             `pi314 <https://github.com/pi314/>`_,
             `su <https://github.com/u1240976/>`_
             (in alphabetical order)
-         
 
 `VT100-ColorPrint` is a tool for coloring output quickly without
 remember `VT100 color attributes definitions`__.

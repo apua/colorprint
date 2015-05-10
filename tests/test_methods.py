@@ -36,7 +36,7 @@ class PrintMethodTest(unittest.TestCase):
 
     def test_with_parameters(self):
         program = 'print(1,2, colors=(\'red\',\'bgred\'), end=\'\')'
-        expect_result ='\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m' 
+        expect_result ='\x1b[31;41m1\x1b[m \x1b[31;41m2\x1b[m'
         self.assertEqual(dump_output(program), expect_result)
 
     def test_no_side_effect(self):

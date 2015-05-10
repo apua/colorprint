@@ -12,7 +12,7 @@ Customization
   intro
   environment variable
   find favorite colors
-  
+
 ====================
 
 They are designed for temporary using.
@@ -64,7 +64,7 @@ https://bitbucket.org/linibou/colorex/wiki/Home
 
 .. 5. 追加 兩種定義法的轉換, 它必須是互動式的功能
       參數 --conf2var, --var2conf: 幫助處理衝突, 轉換, 寫檔
-      參數 --show-names: show custom names 
+      參數 --show-names: show custom names
 
 .. 6. Let methods as `print_` and `pprint_`
 
