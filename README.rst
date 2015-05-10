@@ -85,7 +85,7 @@ mix colors
    [1;38;5;27mabc[m [1;38;5;27m123[m
 
 If there is mixed color used frequently,
-you can set it as default.
+you can set it to environment attribute.
 See `Customization`_ section below.
 
 Command
@@ -159,11 +159,11 @@ long argument   short argument
 Customization
 -------------
 
-set default colors
-``````````````````
+set color names
+```````````````
 
 Though `VT100-ColorPrint` provides `built-in color names`__,
-you could customized default color names by setting
+you could customized color names by setting
 environment variable :code:`COLORPRINT_CUSTOM`:
 
 __ `The Built-in Color Names`_
@@ -173,7 +173,7 @@ __ `The Built-in Color Names`_
    export COLORPRINT_CUSTOM='grey=1,30 blueviolet=38,5,57'
 
 If there are many definitions, you can write it in multiple lines
-for getting more readibility:
+to get more readibility:
 
 .. code-block:: Sh
 
@@ -182,8 +182,7 @@ for getting more readibility:
         blueviolet = 38, 5, 57
         '
 
-After customization, please check the default color names
-by excuting command below:
+After customization, please check color names by excuting command below:
 
 .. code-block:: Sh
 
