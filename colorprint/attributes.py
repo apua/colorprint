@@ -115,6 +115,5 @@ class AttributeMapping(dict):
         return super().__getitem__(key)
 
 
-default_color = os.environ.get(VAR_DEFAULT, '')
 custom_settings = os.environ.get(VAR_CUSTOM, '')
 color_attr_mapping = AttributeMapping(custom_settings)

@@ -9,7 +9,6 @@ usage = '''
 def create_parser():
     import argparse
 
-    from ..attributes import default_color
     from ..info import __version__
 
     parser = argparse.ArgumentParser(
@@ -39,7 +38,6 @@ def create_parser():
     parser.add_argument(
         '-D', '--default', metavar='color',
         nargs='+',
-        default=default_color,
         help='...'*30,
         )
     parser.add_argument(

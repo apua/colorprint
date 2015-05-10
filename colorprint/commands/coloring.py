@@ -9,7 +9,7 @@ def get_stages(namespace):
 
     def colors2attr(colors):
         if not colors:
-            if not namespace.default:
+            if namespace.default is None:
                 raise ValueError('it should be given at least one color')
             colors = namespace.default
 
