@@ -184,7 +184,7 @@ def colorprint(args, input_stream=None, output_stream=None):
     try:
         stages, sep = get_stages(args)
     except (ValueError, KeyError) as e:
-        raise Exception('e.args[0]') 
+        raise Exception(e.args[0])
 
     coloring = gen_coloring_func(stages, sep)
     for line in input_stream:
