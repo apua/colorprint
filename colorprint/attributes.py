@@ -3,6 +3,7 @@ Store color names and get custom names according to env
 """
 
 import os
+import re
 
 
 VAR_CUSTOM  = 'COLORPRINT_CUSTOM'
@@ -41,44 +42,79 @@ BASIC_MAPPING = {
     }
 
 
-def retrieve_custom_colors(custom_file):
-    def warn(msg):
-        import warnings
-        return warnings.warn(msg, category=RuntimeWarning, stacklevel=3)
+def settings2attributes(settings):
+    r"""
+    Transform to attributes from settings.
+    Also check duplicated keys.
 
-    # If file not exist, show warning
-    # If parsing failed, show warning
-    # If there is a custom name 'default', ignore and show warning
-    try:
-        #with
-        '''
-        Open file and parsing, then update `basic_mapping`
-        If there is not such file or paring content failed, raise warning
-        '''
-        raise OSError
-        return {}
-    except OSError as e:
-        warn('Cannot open custom color file "%s"' % e.filename)
-        return {}
-    except:
-        warn('Parse custom color file failed')
-        return {}
+    >>> f = lambda s: sorted(settings2attributes(s).items())
+    >>> f('grey=1,30 blueviolet=38,5,57')
+    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
+    >>> f('''
+    ... grey = 1 , 30
+    ... blueviolet = 38 , 5 , 57
+    ... ''')
+    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
+    >>> f('grey=1,30 kk blueviolet=38,5,57')
+    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
+    >>> f('grey=1,30 grey=1,30 blueviolet=38,5,57')
+    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
+    """
+    def warn(message):
+        import warnings
+        warnings.warn(message, category=RuntimeWarning, stacklevel=3)
+
+    def parse(parts):
+        def split2tuple(string): return tuple(map(int, string.split(',')))
+        kv_patt = re.compile(r'^(?P<key>[_a-zA-Z]\w*)=(?P<value>[\d,]+)$')
+
+        attrs = []
+        warns = []
+        for idx, part in enumerate(parts):
+            m = kv_patt.match(part)
+            if m:
+                attrs.append((m.group('key'), split2tuple(m.group('value'))))
+            else:
+                warns.append((idx+1, part))
+
+        return tuple(attrs), tuple(warns)
+
+    def find_dup(attrs):
+        D = {}
+        for k, v in attrs:
+            D.setdefault(k, []).append(v)
+        return tuple((k,vs) for k,vs in D.items() if len(vs)>1)
+
+    merged = ' '.join(filter(None, map(str.strip, settings.splitlines())))
+    space_cleaned = re.sub(r'\s*([=,])\s*', lambda m:m.group(1), merged)
+    attributes, warn_parts = parse(space_cleaned.split())
+    duplicate = find_dup(attributes)
+
+    if warn_parts:
+        hints = '\n'.join('    part {}: {}'.format(*part) for part in warn_parts)
+        warn('failed parsing:\n' + hints)
+
+    if duplicate:
+        hints = '\n'.join('    key {}: {} | {}'.format(k, *vs) for k,vs in duplicate)
+        warn('duplicated keys:\n' + hints)
+
+    return dict(attributes)
 
 
 class AttributeMapping(dict):
-    def __init__(self, custom_file):
+    def __init__(self, custom_settings):
         self.retrieved = False
-        self.custom_file = custom_file
+        self.custom_settings = custom_settings
 
     def __getitem__(self, key):
         if not self.retrieved:
             self.update(BASIC_MAPPING)
-            if self.custom_file:
-                self.update(retrieve_custom_colors(self.custom_file))
+            if self.custom_settings:
+                self.update(settings2attributes(self.custom_settings))
             self.retrieved = True
         return super().__getitem__(key)
 
 
 default_color = os.environ.get(VAR_DEFAULT, '')
-custom_file = os.environ.get(VAR_CUSTOM, '')
-color_attr_mapping = AttributeMapping(custom_file)
+custom_settings = os.environ.get(VAR_CUSTOM, '')
+color_attr_mapping = AttributeMapping(custom_settings)
