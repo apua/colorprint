@@ -5,7 +5,7 @@ VT100-ColorPrint
 The color print functions and command line tool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:Version:   2
+:Version:   2.0
 :Author:    Apua
 :Copyright: WTFPL
 :Date:      2014.12 - 2015.02
