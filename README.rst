@@ -336,12 +336,3 @@ References
 - `Colored <https://pypi.python.org/pypi/colored>`_
 
 - `Termcolor <https://pypi.python.org/pypi/termcolor>`_
-
-
-Issues
-==============================
-
-Implement in next version:
-
-- ⚡  testing
-- ⚡  integration of docinfo
