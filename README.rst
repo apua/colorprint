@@ -45,112 +45,112 @@ Usage
 ==============================
 
 The functions
---------
+--------------------
 
-There are provided the functions :code:`print_` and :code:`pprint_`
-which work like built-in functions :code:`print` and :code:`pprint`.
-
-with attributes
-```````````````
-
-You can call the color names as their attributes (i.e. members)
-to get colorful output quickly:
+The package provides functions :code:`print_` and :code:`pprint_` which work like built-in functions :code:`print` and :code:`pprint`:
 
 .. code:: Python
 
-   >>> from colorprint import print_ as print, pprint_ as pprint
-   >>> print.reverse.underscore('abc', 123)
-   [7;4mabc[m [7;4m123[m
-   >>> pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
-   [7m{0: 'a', 1: 'b', 2: 'c'}[m
+    >>> from colorprint import print_ as print, pprint_ as pprint
 
-with parameters
-```````````````
+Member function
+```````````````````
 
-For pythonic, it can color output with parameter :code:`colors`:
+You can set color with member function as below:
 
 .. code:: Python
 
-   >>> colors = ['reverse', 'underscore']
-   >>> print(colors=colors, *range(3))
-   [7;4m0[m [7;4m1[m [7;4m2[m
+    >>> print.reverse.underscore('abc', 123)
+    [7;4mabc[m [7;4m123[m
+    >>> pprint.reverse(dict(zip(range(3), 'abc')), depth=1)
+    [7m{0: 'a', 1: 'b', 2: 'c'}[m
 
-mix colors
-``````````
+Parameter
+```````````````````
+
+You can alos set color with parameter :code:`colors`:
 
 .. code:: Python
 
-   >>> from colorprint import print_ as print
-   >>> from colorprint import color_attr_mapping
-   >>> color_attr_mapping['ocean'] = color_attr_mapping['bright'] + (38,5,27)
-   >>> color_attr_mapping['ocean']
-   (1, 38, 5, 27)
-   >>> print.ocean('abc', 123)
-   [1;38;5;27mabc[m [1;38;5;27m123[m
+    >>> colors = ['reverse', 'underscore']
+    >>> print(colors=colors, *range(3))
+    [7;4m0[m [7;4m1[m [7;4m2[m
 
-If there is mixed color used frequently,
-you can set it to environment attribute.
-See `Customization`_ section below.
+Customization
+```````````````````
 
-Command
--------
+You can customize your favorite color and set a color name for convenience.
 
-There is a command :code:`colorprint` for coloring streaming data.
-You can use it to color data line by line.
+.. code:: Python
 
-with fields
-```````````
+    >>> from colorprint import color_attr_mapping
+    >>> color_attr_mapping['ocean'] = color_attr_mapping['bright'] + (38,5,27)
+    >>> color_attr_mapping['ocean']
+    (1, 38, 5, 27)
+    >>> print.ocean('abc', 123)
+    [1;38;5;27mabc[m [1;38;5;27m123[m
 
-In basic, you can just select which fields to color
-and which colors to use:
 
-.. code-block:: Sh
+The shell command
+--------------------
 
-   tail -f log | colorprint --fields 1 3 5 bright yellow
+The command provides a shell command :code:`colorprint` coloring streaming data line by line:
 
-You can also choose fields with slicing:
+.. code:: Sh
 
-.. code-block:: Sh
+    colorprint --help
 
-   colorprint --fields 1:3 red --separator ',' < data.csv
+Fields
+```````````````````
 
-Or, choose the last field since unkown how many fields of given data:
+You can just select fields and color to highlight:
 
-.. code-block:: Sh
+.. code:: Sh
 
-   colorprint --fields -1 reverse --separator ',' < data.csv
+    tail -f log | colorprint --fields 1 3 5 bright blue
 
-At the end, you can take multi actions in the same time.
+In addition, you can choose fields with Python`s slice notation:
 
-.. code-block:: Sh
+.. code:: Sh
 
-   colorprint --separator ',' --fields 1:3 red --fields 1 3 5 -1 reverse < data.csv
+    tail -f log | colorprint --fields 1:6:2 bright blue
 
-Attention, the number of field works as AWK field number
-when greater than zero, and works as Python index or slice
-in otherwise.
-
-with pattern
-````````````
-
-You can find strings to color with regular expression.
-It would color every matching strings:
+You can also choose the last field like Python`s index notation while you don`t know how many fields:
 
 .. code-block:: Sh
 
-   cat log | colorprint --pattern '\[\d+\]' bright blue
+    tail -f log | colorprint --fields -1 bright blue
 
-In addition, it supports group numbers, so that you can
-color only parts of given pattern:
+By default, the separator is regexp "\s+"; you can set othere separator such as ",":
 
 .. code-block:: Sh
 
-   cat log | colorprint --pattern '\[(\d+)\]' 1 bright blue
+    colorprint --separator ',' --fields -1 bright blue < data.csv
 
-short arguments
-```````````````
+.. note::
 
-:code:`colorprint` provides short arguments for convenience.
+    The number of field works as AWK field number when greater than zero;
+    otherwise, it works as Python`s index/slice notation.
+
+Pattern
+```````````````````
+
+You can use regexp to find string to color:
+
+.. code:: Sh
+
+    tail -f log | colorprint --pattern '\[:\d+\]' bright blue
+
+The command supports regexp group, so you can indicate which group you want to color:
+
+.. code:: Sh
+
+    tail -f log | colorprint --pattern '\[(\d+):(\d+)]' 1 2 bright blue
+
+Short arguments
+```````````````````
+
+The command provides short arguments for convenience.
 
 =============   ==============
 long argument   short argument
@@ -160,59 +160,51 @@ long argument   short argument
 `--pattern`     `-P`
 =============   ==============
 
+
 Customization
--------------
+--------------------
 
-set color names
-```````````````
+Set color
+```````````````````
 
-Though `VT100-ColorPrint` provides `built-in color names`__,
-you could customized color names by setting
-environment variable :code:`COLORPRINT_CUSTOM`:
+The package has `built-in color names`__, but you can set favorite color for frequent usage:
 
 __ `The Built-in Color Names`_
 
-.. code-block:: Sh
+.. code:: Sh
 
    export COLORPRINT_CUSTOM='grey=1,30 blueviolet=38,5,57'
 
-If there are many definitions, you can write it in multiple lines
-to get more readibility:
+It can be defined in multiple lines for more readibility:
 
-.. code-block:: Sh
+.. code:: Sh
 
    export COLORPRINT_CUSTOM='
         grey = 1, 30
         blueviolet = 38, 5, 57
         '
 
-After customization, please check color names by excuting command below:
+The command has argument for checking custom color:
 
 .. code-block:: Sh
 
    colorprint --show-names
 
-find favorite colors
-````````````````````
+Find color
+```````````````````
 
-The arguments of command :code:`colorprint`,
-:code:`--show16` and :code:`--show256`,
-could show all colors.
+The command has two arguments: :code:`--show16` and :code:`--show256`.
+They will show all colors or given color attributes. You can use them to find your desire.
 
-In addition, you can test mixed colors quickly as below:
+.. code:: Sh
 
-.. code-block:: Sh
+   colorprint --show256 38 5 57
 
-   colorprint --show bright 38 5 57
+Customize command
+```````````````````
 
-customize command
-`````````````````
-
-Shell (such as Bourne Shell, Bash, ...etc) provides :code:`alias`,
-:code:`function`, and :code:`variable`.
-You can use these features to customize commmands.
-
-Here are some examples with Bourne Shell:
+Shell (such as Bourne Shell, Bash, ...etc) usually provides :code:`alias`, :code:`function`, and :code:`variable`.
+You can use these features to customize commmands. Below are some examples:
 
 - Since :code:`--fields` arguments always being used:
 
@@ -243,7 +235,7 @@ Frequently Asked Questions
 
 About the package:
 
-- :Q: The name `VT100-ColorPrint` is verbose. Why not use shorter name, such as `ColorPrint`?
+- :Q: The name `VT100-ColorPrint`_ is verbose. Why not use shorter name, such as `ColorPrint <https://pypi.python.org/pypi/colorprint/>`_?
   :A: Because it has been taken. See https://pypi.python.org/pypi/colorprint/
 
 - :Q: Can it run on Microsoft Windows?
@@ -271,17 +263,12 @@ About the funtions:
 
 About the command:
 
-- :Q: I think the command name "colorprint" is too long, and I don`t like set color every time....
-  :A: There should be :code:`alias` command or feature in your shell. Use it.
-
-- :Q: The parameters are too flexible. I only have few use cases.
-  :A: Please consider :code:`function` feature in your shell.
+- :Q: I think the command name "colorprint" is too long, and the parameters are too flexible.
+      I don`t like set color every time. I only have few use cases.
+  :A: You can use shell features. Refer to `Customize command`_.
 
 
 About customizing color:
-
-- :Q: I am not sure if my customization works or not.
-  :A: Use the command :code:`colorprint --show-names` to test it.
 
 - :Q: Why not provide a configuration file like :code:`~/.colorprint`?
   :A: *Flat is better than nested*, there is no need to write it in specified file since it is just used for defining colors.
@@ -349,3 +336,12 @@ References
 - `Colored <https://pypi.python.org/pypi/colored>`_
 
 - `Termcolor <https://pypi.python.org/pypi/termcolor>`_
+
+
+Issues
+==============================
+
+Implement in next version:
+
+- ⚡  testing
+- ⚡  integration of docinfo
