@@ -1,7 +1,9 @@
-from setuptools import setup
+from distutils.core import setup
+
 import re
 import os
 import sys
+
 
 def get_info_from_readme():
     """
@@ -30,20 +32,29 @@ def get_info_from_readme():
         })
     return result
 
-Info = get_info_from_readme()
 
-setup(
-    # Information from README
-    author=Info.get('author'),
-    version=Info.get('version'),
-    license=Info.get('copyright'),
-    description=Info.get('subtitle'),
-    long_description=Info.get('content'),
-    name=Info.get('title'),
-    url=Info.get('url'),
-    # Information for installation
-    package_dir={'': 'PY2' if sys.version_info[0]==2 else '.'},
-    packages=['colorprint'],
-    scripts=['scripts/colorprint'],
-    test_suite='tests',
-    )
+if __name__=='__main__':
+    assert sys.version_info[0]==3
+
+    Info = get_info_from_readme()
+    setup(
+        # Information from README
+        author=Info.get('author'),
+        author_email='Apua.A.Aa@gmail',
+        version=Info.get('version'),
+        license=Info.get('copyright'),
+        description=Info.get('subtitle'),
+        long_description=Info.get('content'),
+        name=Info.get('title').lower(),
+        url=Info.get('url'),
+        # Information for installation
+        #package_dir={'': 'PY2' if sys.version_info[0]==2 else '.'},
+        package_dir={'': '.'},
+        packages=['colorprint'],
+        scripts=['scripts/colorprint'],
+        test_suite='tests',
+        classifiers=[
+            'Development Status :: 3 - Alpha',
+            'Programming Language :: Python :: 3.4',
+            ],
+        )
