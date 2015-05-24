@@ -19,7 +19,7 @@ The color print functions and command line tool
     (in alphabetical order)
 
 :Downloads:
-    .. image:: https://pypip.in/download/VT100-ColorPrint/badge.svg
+    .. image:: https://img.shields.io/pypi/dm/VT100-ColorPrint.svg
         :target: https://pypi.python.org/pypi/VT100-ColorPrint/
         :alt: Downloads
 
