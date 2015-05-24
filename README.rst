@@ -10,36 +10,41 @@ The color print functions and command line tool
 :Copyright: WTFPL
 :Date:      2014.12 - 2015.02
 :Url:       https://github.com/apua/colorprint
-:Credits:   `dv <https://github.com/wdv4758h/>`_,
-            `iblis <https://github.com/iblis17/>`_,
-            `pi314 <https://github.com/pi314/>`_,
-            `su <https://github.com/u1240976/>`_
-            (in alphabetical order)
 
-`VT100-ColorPrint` is a tool for coloring output quickly without
-remember `VT100 color attributes definitions`__.
+:Credits:
+    `dv <https://github.com/wdv4758h/>`_,
+    `iblis <https://github.com/iblis17/>`_,
+    `pi314 <https://github.com/pi314/>`_,
+    `su <https://github.com/u1240976/>`_
+    (in alphabetical order)
+
+:Downloads:
+    .. image:: https://pypip.in/download/VT100-ColorPrint/badge.svg
+        :target: https://pypi.python.org/pypi/VT100-ColorPrint/
+        :alt: Downloads
+
+
+`VT100-ColorPrint` is a tool for coloring output easily and quickly
+without to remember `VT100 color attributes definitions`__.
+It provides:
+
+#. Two print functions: :code:`print_` and :code:`pprint_`.
+#. A shell command: :code:`colorprint`.
+#. Use the environment variable :code:`COLORPRINT_CUSTOM` to define color names.
 
 __ `References`_
 
-It provides:
-
-1. A system command: :code:`colorprint`
-
-2. Two functions: :code:`print_` and :code:`pprint_`
-
-3. Flexibility of customing color.
-
 
 Installation
-============
+==============================
 
 :code:`pip install vt100-colorprint`
 
 
 Usage
-=====
+==============================
 
-Function
+The functions
 --------
 
 There are provided the functions :code:`print_` and :code:`pprint_`
@@ -233,62 +238,57 @@ Here are some examples with Bourne Shell:
      colorprint $hlpid $hldate < log
 
 
-FAQ
-===
+Frequently Asked Questions
+==============================
 
-- :Q: The name `VT100-ColorPrint` is verbose.
-      Why not take `ColorPrint`?
-  :A: Because it has been taken.
-      See https://pypi.python.org/pypi/colorprint/0.1
+About the package:
 
-- :Q: It seems like it cannot run on M$ Windows?
-  :A: What is M$ Windows?
+- :Q: The name `VT100-ColorPrint` is verbose. Why not use shorter name, such as `ColorPrint`?
+  :A: Because it has been taken. See https://pypi.python.org/pypi/colorprint/
 
-- :Q: About the functions :code:`print_` and :code:`pprint_`,
-      I think it is not necessary to use it on product.
-  :A: That`s right. These functions are used for colorful output
-      temporary. It is useful when checking output.
-      With the product code, it is recommended to define a function
-      or assign variables for your special purpose.
+- :Q: Can it run on Microsoft Windows?
+  :A: What is Microsoft Windows?
 
-- :Q: How about take "print" as the function name of :code:`print_`
-      instead of "print\_"?
-  :A: It should take different names between two different
-      functions. And, Python2.x treats :code:`print` as statement,
-      so that it is easy to make mistake with naming "print".
+- :Q: I think the functinos (i.e. :code:`print_` and :code:`pprint_`) are useless for my production. 
+  :A: Yes. These functions are just for temporary usage;
+      defining your own coloring functions is better when you know which color you prefered.
 
-- :Q: Why does it provide functions with color attributes?
-      Is it not enough that providing functions with parameter
-      :code:`colors`?
-  :A: Using attributes would be shorter and easy to edit.
+- :Q: Is there a need to provide customizing color?
+  :A: Yes. The display results are not all the same on different terminal emulaters.
 
-- :Q: When writing with color attributes, why should we put "print"
-      at the start of line but the end?
-  :A: After discussion, we think it is intuitive to put it at
-      the start of line.
-      By the way, the editing speed of both are almost the same
-      with Vim.
 
-- :Q: Are the built-in 16 colors and background colors not enough?
-  :A: No. The displays of colors on different terminal emulaters
-      might be different, so it is necessary to provide
-      customization ability.
+About the funtions:
+
+- :Q: Why not remove postfix of :code:`print_` and :code:`pprint_`?
+  :A: It is for not confusing built-in :code:`print` and :code:`pprint`.
+
+- :Q: Why there are two ways to set color on print function? What is the difference?
+  :A: Setting color with parameter is more pythonic, and setting color with member function is more obvious.
+
+- :Q: With member function, why do you put "print" at the start of line but the end?
+  :A: We think it is more intuitive. Besides, it`s no effect between the two style with Vim.
+
+
+About the command:
+
+- :Q: I think the command name "colorprint" is too long, and I don`t like set color every time....
+  :A: There should be :code:`alias` command or feature in your shell. Use it.
+
+- :Q: The parameters are too flexible. I only have few use cases.
+  :A: Please consider :code:`function` feature in your shell.
+
+
+About customizing color:
 
 - :Q: I am not sure if my customization works or not.
-  :A: Try :code:`colorprint --show-names`.
+  :A: Use the command :code:`colorprint --show-names` to test it.
 
-- :Q: Does the customization work on the functions, too?
-  :A: Yes.
-
-- :Q: Why not provide a configuration file like
-      :code:`~/.colorprint`?
-  :A: It is only used to define colors.
-      *Flat is better than nested*, there is no need to write it
-      in specified file.
+- :Q: Why not provide a configuration file like :code:`~/.colorprint`?
+  :A: *Flat is better than nested*, there is no need to write it in specified file since it is just used for defining colors.
 
 
 The Built-in Color Names
-========================
+==============================
 
 ================   ======
 name               value
@@ -338,7 +338,7 @@ bgbwhite           107
 
 
 References
-==========
+==============================
 
 - `Display Attributes of ANSI/VT100 Terminal Control Escape Sequences <http://www.termsys.demon.co.uk/vtansi.htm#colors>`_
 
@@ -349,4 +349,3 @@ References
 - `Colored <https://pypi.python.org/pypi/colored>`_
 
 - `Termcolor <https://pypi.python.org/pypi/termcolor>`_
-
