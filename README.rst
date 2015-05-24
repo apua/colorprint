@@ -8,7 +8,7 @@ The color print functions and command line tool
 :Version:   2.0
 :Author:    Apua
 :Copyright: WTFPL
-:Date:      2014.12 - 2015.02
+:Date:      2014.12 - 2015.05
 :Url:       https://github.com/apua/colorprint
 
 :Credits:
