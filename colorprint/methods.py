@@ -39,7 +39,7 @@ class ColorPrint:
         locals_ = locals()
         kwargs_ = {key: locals_[key] for key in ('sep','end','file','flush') if locals_[key] is not None}
 
-        return print(*values_, **kwargs_)
+        return _print(*values_, **kwargs_)
 
     def __getattr__(self, color_name):
         try:
@@ -116,6 +116,6 @@ class ColorPPrint(ColorPrint):
 
         return printer.pprint(values)
 
-
+_print = print
 print  = ColorPrint()
 pprint = ColorPPrint()
