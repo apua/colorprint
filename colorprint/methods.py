@@ -1,5 +1,5 @@
 '''
-Provide `print_` and `pprint_` methods
+Provide `print` and `pprint` methods
 '''
 
 from .attributes import color_attr_mapping
@@ -117,5 +117,5 @@ class ColorPPrint(ColorPrint):
         return printer.pprint(values)
 
 
-print_  = ColorPrint()
-pprint_ = ColorPPrint()
+print  = ColorPrint()
+pprint = ColorPPrint()

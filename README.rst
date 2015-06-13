@@ -28,7 +28,7 @@ The color print functions and command line tool
 without to remember `VT100 color attributes definitions`__.
 It provides:
 
-#. Two print functions: :code:`print_` and :code:`pprint_`.
+#. Two print functions: :code:`print` and :code:`pprint`.
 #. A shell command: :code:`colorprint`.
 #. Use the environment variable :code:`COLORPRINT_CUSTOM` to define color names.
 
@@ -47,11 +47,11 @@ Usage
 The functions
 --------------------
 
-The package provides functions :code:`print_` and :code:`pprint_` which work like built-in functions :code:`print` and :code:`pprint`:
+The package provides functions :code:`print` and :code:`pprint` which work like built-in functions :code:`print` and :code:`pprint`:
 
 .. code:: Python
 
-    >>> from colorprint import print_ as print, pprint_ as pprint
+    >>> from colorprint import print as print, pprint as pprint
 
 Member function
 ```````````````````
@@ -241,7 +241,7 @@ About the package:
 - :Q: Can it run on Microsoft Windows?
   :A: What is Microsoft Windows?
 
-- :Q: I think the functinos (i.e. :code:`print_` and :code:`pprint_`) are useless for my production. 
+- :Q: I think the functinos (i.e. :code:`print` and :code:`pprint`) are useless for my production.
   :A: Yes. These functions are just for temporary usage;
       defining your own coloring functions is better when you know which color you prefered.
 
@@ -250,9 +250,6 @@ About the package:
 
 
 About the funtions:
-
-- :Q: Why not remove postfix of :code:`print_` and :code:`pprint_`?
-  :A: It is for not confusing built-in :code:`print` and :code:`pprint`.
 
 - :Q: Why there are two ways to set color on print function? What is the difference?
   :A: Setting color with parameter is more pythonic, and setting color with member function is more obvious.
