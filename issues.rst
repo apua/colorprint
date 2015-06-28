@@ -7,14 +7,9 @@ convenient tool
     stream color
 
 deploy
-    testing
-        unittest
-            [ ] add testing for CLI tool by inject input data (including command) and assert the output string
-
-        doctest
-
     information
         document (include PyDoc)
+            [ ] add docstring to `AttributeMapping` so that `colormap` has docinfo
             [ ] :mod:`__init__`
             [✓] :mod:`color_mapping`
             [ ] :mod:`methods`
@@ -23,30 +18,28 @@ deploy
         command help
             [ ] write help info to CLI tool
 
-        pydoc
-            [ ] add docstring to `AttributeMapping` so that `colormap` has docinfo
+        `README.rst` FAQ
+            [ ] :cmd:`echo ccc--ooo-----tt | python3.4 -m colorprint  -P "(--)" reverse`
 
-        FAQ
-            [ ] ``echo ccc--ooo-----tt | python3.4 -m colorprint  -P "(--)" reverse``
+    Python2 support
+        [ ] python2 support with setuptools
 
-    support
-        no Win
+    generate some information from `README.rst`
+        [ ] `author`, `version`
+        [ ] :mod:`colorprint.__init__`
+        [ ] :mod:`colorprint.methods`
 
-        py2
-            [ ] python2 support with setuptools
+    unittest / doctest (use `py.text` or `nosetest`)
+        [ ] :mod:`methods`
+        [ ] :mod:`color_mapping`
+        [ ] :mod:`commad`
 
-        py3
+    exception
+        [ ] review error handler; 自訂顏色的檢查足夠嗎?
+        [ ] use "During handling of the above exception, another exception occurred" or not??
+            consider :mod:`methods` line 48
 
-        edit information only at one place
-
-        unittest / doctest
-
-        exception
-            [ ] review error handler; 自訂顏色的檢查足夠嗎?
-            [ ] use "During handling of the above exception, another exception occurred" or not??
-                consider :mod:`methods` line 48
-
-        naming and architecture
-            [✓] `commands.run_cmd` → `command.run`
-            [✓] `attributes.color_attr_mapping` → `color_mapping.colormap`
-            [ ] refactor
+    naming and architecture
+        [✓] `commands.run_cmd` → `command.run`
+        [✓] `attributes.color_attr_mapping` → `color_mapping.colormap`
+        [ ] refactor
