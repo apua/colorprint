@@ -1,10 +1,3 @@
-`<http://www.google.com>`_
-
-.. role:: strike
-   :class: done
-   
-:strike:`qwer`
-
 Issues
 ======
 
