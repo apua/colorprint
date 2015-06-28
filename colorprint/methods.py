@@ -1,5 +1,7 @@
 '''
 Provide `print` and `pprint` methods
+
+NotImplemented
 '''
 
 from .color_mapping import colormap
@@ -30,7 +32,7 @@ class ColorPrint:
         elif self.vt_attr:
             coloring = colorform(self.vt_attr).format
         elif 'colors' in kwargs:
-            vt_attr = sum((color_attr_mapping[k] for k in kwargs['colors']), ())
+            vt_attr = sum((colormap[k] for k in kwargs['colors']), ())
             coloring = colorform(vt_attr).format
         else:
             coloring = identity
@@ -43,7 +45,7 @@ class ColorPrint:
 
     def __getattr__(self, color_name):
         try:
-            return self.__class__(self.vt_attr + color_attr_mapping[color_name])
+            return self.__class__(self.vt_attr + colormap[color_name])
         except KeyError as e:
             raise AttributeError('Color "%s" is not defined' % e.args[0])
 
@@ -99,7 +101,7 @@ class ColorPPrint(ColorPrint):
         elif self.vt_attr:
             coloring = colorform(self.vt_attr).format
         elif 'colors' in kwargs:
-            vt_attr = sum((color_attr_mapping[k] for k in kwargs['colors']), ())
+            vt_attr = sum((colormap[k] for k in kwargs['colors']), ())
             coloring = colorform(vt_attr).format
         else:
             coloring = identity
