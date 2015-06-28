@@ -1,7 +1,7 @@
 `<http://www.google.com>`_
 
 .. role:: strike
-   :class: strike
+   :class: done
    
 :strike:`qwer`
 
