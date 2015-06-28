@@ -1,3 +1,7 @@
-from .info import *
-from .methods import print, pprint, color_attr_mapping
-__all__ = ['print', 'pprint', 'color_attr_mapping']
+"""
+NotImplemented
+"""
+
+from .color_mapping import colormap
+from .info import author as __author__, version as __version__
+from .methods import print, pprint
