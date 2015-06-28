@@ -1,5 +1,10 @@
 `<http://www.google.com>`_
 
+.. role:: strike
+   :class: strike
+   
+:strike:`qwer`
+
 Issues
 ======
 
