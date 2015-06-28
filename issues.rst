@@ -1,11 +1,3 @@
-
-
-.. role:: del
-     :class: select-menu-button
-
-
-:del:`try`
-
 Issues
 ======
 
