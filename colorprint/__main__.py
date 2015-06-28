@@ -1,2 +1,2 @@
-from . import commands
-commands.run_cmd()
+from . import command
+command.run()

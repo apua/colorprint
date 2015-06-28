@@ -2,12 +2,12 @@
 Provide `print` and `pprint` methods
 '''
 
-from .attributes import color_attr_mapping
+from .color_mapping import colormap
 
+_print = print
 
 def identity(x):
     return x
-
 
 def colorform(vt_attr):
     attrs = ';'.join(map(str, vt_attr))
@@ -116,6 +116,6 @@ class ColorPPrint(ColorPrint):
 
         return printer.pprint(values)
 
-_print = print
+
 print  = ColorPrint()
 pprint = ColorPPrint()

@@ -3,7 +3,7 @@ from .show_colors import get_color_info
 from .coloring import colorprint
 
 
-def run_cmd():
+def run():
     parser = create_parser()
     args = parser.parse_args()
 

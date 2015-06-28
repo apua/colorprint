@@ -1,6 +1,6 @@
 def get_stages(namespace):
     import re
-    from ..attributes import color_attr_mapping
+    from ..color_mapping import colormap
 
     sep = re.compile(namespace.separator)
     field_form = re.compile(r'((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?:?((?:\+|-)?\d+)?')
