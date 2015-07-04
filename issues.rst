@@ -28,8 +28,7 @@ generate data from `README.rst`
     [ ] `setup.py`
 
 docstring (include part of doctest)
-    [ ] :func:`color_mapping.defs2map`
-    [ ] :func:`color_mapping.ColorMapping`
+    [✓] :func:`color_mapping.defs2map`
     [ ] :mod:`command`
     [ ] `README.rst`
 
