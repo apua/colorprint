@@ -1,13 +1,8 @@
-"""
-Store color names and get custom names according to env
-"""
-
 import os
 import re
+import warnings
 
-
-VAR_CUSTOM  = 'COLORPRINT_CUSTOM'
-VAR_DEFAULT = 'COLORPRINT_DEFAULT'
+CUSTOM_VAR  = 'COLORPRINT_CUSTOM'
 
 BASIC_MAPPING = {
     'reset':              (0,),
@@ -42,79 +37,76 @@ BASIC_MAPPING = {
     }
 
 
-def settings2attributes(settings):
+def warn(message):
+    import warnings
+    warnings.warn(message, category=RuntimeWarning, stacklevel=2)
+
+
+def defs2map(defs):
     r"""
-    Transform to attributes from settings.
-    Also check duplicated keys.
-
-    >>> f = lambda s: sorted(settings2attributes(s).items())
-    >>> f('grey=1,30 blueviolet=38,5,57')
-    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
-    >>> f('''
-    ... grey = 1 , 30
-    ... blueviolet = 38 , 5 , 57
-    ... ''')
-    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
-    >>> f('grey=1,30 kk blueviolet=38,5,57')
-    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
-    >>> f('grey=1,30 grey=1,30 blueviolet=38,5,57')
-    [('blueviolet', (38, 5, 57)), ('grey', (1, 30))]
+    Transform definitions to mapping, and warn if there is wrong format or
+    duplicate definitions.
+    >>> M = {'grey': (1,30), 'blueviolet': (38,5,57)}
+    >>> M == defs2map("grey=1,30 blueviolet=38,5,57")
+    True
+    >>> M == defs2map('''
+    ...     grey = 1, 30
+    ...     blueviolet = 38, 5, 57
+    ...     ''')
+    True
     """
-    def warn(message):
-        import warnings
-        warnings.warn(message, category=RuntimeWarning, stacklevel=3)
+    if not defs.strip():
+        return {}
 
-    def parse(parts):
-        def split2tuple(string): return tuple(map(int, string.split(',')))
-        kv_patt = re.compile(r'^(?P<key>[_a-zA-Z]\w*)=(?P<value>[\d,]+)$')
+    form = re.compile('''
+        (?P<sep>^|\s+)
+        (?P<name>[_a-zA-Z]\w*)\s*
+        =\s*
+        (?P<attrs>[\ \t]*\d+([\ \t]*,[\ \t]*\d+)*,?)
+        (?=\s|$)
+        ''', re.X)
+    duplicates = wformats = False #flags
+    last = 0
+    mapping = {}
+    for m in form.finditer(defs.strip()):
+        name = m.group('name')
+        attrs = eval('('+m.group('attrs')+')')
+        if name in mapping:
+            duplicates = True
+        if m.start()!=last:
+            wformats = True
+        mapping[name] = attrs
+        last = m.end()
+    if 'm' not in locals() or m.end()!=m.endpos:
+        wformats = True
 
-        attrs = []
-        warns = []
-        for idx, part in enumerate(parts):
-            m = kv_patt.match(part)
-            if m:
-                attrs.append((m.group('key'), split2tuple(m.group('value'))))
-            else:
-                warns.append((idx+1, part))
+    if duplicates:
+        warn("duplicate definition")
+    if wformats:
+        warn("wrong format definition")
 
-        return tuple(attrs), tuple(warns)
-
-    def find_dup(attrs):
-        D = {}
-        for k, v in attrs:
-            D.setdefault(k, []).append(v)
-        return tuple((k,vs) for k,vs in D.items() if len(vs)>1)
-
-    merged = ' '.join(filter(None, map(str.strip, settings.splitlines())))
-    space_cleaned = re.sub(r'\s*([=,])\s*', lambda m:m.group(1), merged)
-    attributes, warn_parts = parse(space_cleaned.split())
-    duplicate = find_dup(attributes)
-
-    if warn_parts:
-        hints = '\n'.join('    part {}: {}'.format(*part) for part in warn_parts)
-        warn('failed parsing:\n' + hints)
-
-    if duplicate:
-        hints = '\n'.join('    key {}: {} | {}'.format(k, *vs) for k,vs in duplicate)
-        warn('duplicated keys:\n' + hints)
-
-    return dict(attributes)
+    return mapping
 
 
-class AttributeMapping(dict):
-    def __init__(self, custom_settings):
-        self.retrieved = False
-        self.custom_settings = custom_settings
+class ColorMapping(dict):
+    """
+    `ColorMapping` is a dict, will retrieve custom color name definitions
+    from environment variable `CUSTOM_VAR` when `__getitem__` has been called,
+    so that it avoids raising parsing custom data error when importing
+    `colorprint` module.
+    """
+    def __init__(self):
+        self.update(BASIC_MAPPING)
+        self._custom_defs = os.environ.get(CUSTOM_VAR)
+        self._retrieved = self._custom_defs is None
 
     def __getitem__(self, key):
-        if not self.retrieved:
-            self.update(BASIC_MAPPING)
-            if self.custom_settings:
-                self.update(settings2attributes(self.custom_settings))
-            self.retrieved = True
+        if not self._retrieved:
+            self.update(defs2map(self._custom_defs))
+            self._retrieved = True
         return super().__getitem__(key)
 
 
-custom_settings = os.environ.get(VAR_CUSTOM, '')
-#color_attr_mapping = AttributeMapping(custom_settings)
-colormap = AttributeMapping(custom_settings)
+#colormap = BASIC_MAPPING.copy()
+#colormap.update(defs2map(os.environ.get(CUSTOM_VAR)))
+colormap = ColorMapping()
