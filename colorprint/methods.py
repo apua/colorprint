@@ -1,9 +1,3 @@
-'''
-Provide `print` and `pprint` methods
-
-NotImplemented
-'''
-
 from .color_mapping import colormap
 
 _print = print
