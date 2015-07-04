@@ -12,8 +12,8 @@ methods implement
     [ ] let `print` be function but class instance
 
 color_mapping implement
-    [ ] given basic mapping at the beginning
-    [ ] get custom definition when excuting `__getitem__`
+    [✓] given basic mapping at the beginning
+    [✓] get custom definition when excuting `__getitem__`
 
 `README.rst` implement
     [ ] FAQ :cmd:`echo ccc--ooo-----tt | python3.4 -m colorprint  -P "(--)" reverse`
