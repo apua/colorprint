@@ -1,9 +1,16 @@
+import io
+import pprint as pprint_module
+import re
+
 from .color_mapping import colormap
 
 _print = print
+_pprint = pprint_module.pprint
+
 
 def identity(x):
     return x
+
 
 def colorform(vt_attr):
     attrs = ';'.join(map(str, vt_attr))
@@ -44,13 +51,9 @@ class ColorPrint:
             raise AttributeError('Color "%s" is not defined' % e.args[0])
 
 
-class ColorPPrint(ColorPrint):
+class ColorPprint(ColorPrint):
     def __call__(self, values, stream=None, indent=1, width=80, depth=None, *, compact=False, **kwargs):
         """copy from `pprint.pprint`"""
-        import io
-        import pprint
-        import re
-
         class ColoringTextIOWrapper(io.TextIOWrapper):
             def __init__(self, *a, coloring=identity, **kw):
                 super().__init__(*a, **kw)
@@ -83,7 +86,6 @@ class ColorPPrint(ColorPrint):
                         #self.buffer.close()
                         pass
 
-
         try:
             invalid_key = next(k for k in kwargs if k!='colors')
             raise TypeError("'%s' is an invalid keyword argument for this function" % invalid_key)
@@ -100,7 +102,7 @@ class ColorPPrint(ColorPrint):
         else:
             coloring = identity
 
-        printer = pprint.PrettyPrinter(stream=stream, indent=indent, width=width, depth=depth, compact=compact)
+        printer = pprint_module.PrettyPrinter(stream=stream, indent=indent, width=width, depth=depth, compact=compact)
 
         # Some class such as `io.StringIO` has no `buffer` attribute
         # and it is no need to encode/decode
@@ -128,4 +130,4 @@ def pprint(value, **kargs):
     The usage is same as `pprint.pprint` function.
     """
     return _pprint(value, **kargs)
-pprint.__dict__ = {name: ColorPPrint(colormap[name]) for name in colormap}
+pprint.__dict__ = {name: ColorPprint(colormap[name]) for name in colormap}
