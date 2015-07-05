@@ -17,10 +17,14 @@ color_mapping implement
 
 `README.rst` implement
     [ ] FAQ :cmd:`echo ccc--ooo-----tt | python3.4 -m colorprint  -P "(--)" reverse`
+    [ ] FAQ ``add to `~/.pythonstartup.py```
     [ ] convenient tool
         - print.red.bgblue
         - check and set color
         - stream coloring
+
+man support
+    [✓] show `print` `pprint` as functions
 
 generate data from `README.rst`
     [ ] `author`/`version`
@@ -49,3 +53,8 @@ naming and architecture
     [✓] `attributes.color_attr_mapping` → `color_mapping.colormap`
     [ ] refactor
     [ ] removing tail space
+    [✓] `ColorPPrint` -> `ColorPprint`
+    [ ] refine arch of two classes in `methods`
+
+Question:
+    - How to "new" a function object with given name? Any doc?
