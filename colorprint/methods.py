@@ -113,5 +113,19 @@ class ColorPPrint(ColorPrint):
         return printer.pprint(values)
 
 
-print  = ColorPrint()
-pprint = ColorPPrint()
+def print(*values, **kargs):
+    """
+    A new print function, which supports color name as attributes.
+    The usage is same as built-in print function.
+    """
+    return _print(*values, **kargs)
+print.__dict__ = {name: ColorPrint(colormap[name]) for name in colormap}
+
+
+def pprint(value, **kargs):
+    """
+    A new pprint function, which supports color name as attributes.
+    The usage is same as `pprint.pprint` function.
+    """
+    return _pprint(value, **kargs)
+pprint.__dict__ = {name: ColorPPrint(colormap[name]) for name in colormap}

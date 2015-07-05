@@ -88,25 +88,25 @@ def defs2map(defs):
     return mapping
 
 
-class ColorMapping(dict):
-    """
-    `ColorMapping` is a dict, will retrieve custom color name definitions
-    from environment variable `CUSTOM_VAR` when `__getitem__` has been called,
-    so that it avoids raising parsing custom data error when importing
-    `colorprint` module.
-    """
-    def __init__(self):
-        self.update(BASIC_MAPPING)
-        self._custom_defs = os.environ.get(CUSTOM_VAR)
-        self._retrieved = self._custom_defs is None
+#class ColorMapping(dict):
+#    """
+#    `ColorMapping` is a dict, will retrieve custom color name definitions
+#    from environment variable `CUSTOM_VAR` when `__getitem__` has been called,
+#    so that it avoids raising parsing custom data error when importing
+#    `colorprint` module.
+#    """
+#    def __init__(self):
+#        self.update(BASIC_MAPPING)
+#        self._custom_defs = os.environ.get(CUSTOM_VAR)
+#        self._retrieved = self._custom_defs is None
+#
+#    def __getitem__(self, key):
+#        if not self._retrieved:
+#            self.update(defs2map(self._custom_defs))
+#            self._retrieved = True
+#        return super().__getitem__(key)
 
-    def __getitem__(self, key):
-        if not self._retrieved:
-            self.update(defs2map(self._custom_defs))
-            self._retrieved = True
-        return super().__getitem__(key)
 
-
-#colormap = BASIC_MAPPING.copy()
-#colormap.update(defs2map(os.environ.get(CUSTOM_VAR)))
-colormap = ColorMapping()
+colormap = BASIC_MAPPING.copy()
+colormap.update(defs2map(os.environ.get(CUSTOM_VAR)))
+#colormap = ColorMapping()
