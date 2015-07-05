@@ -9,7 +9,7 @@ command implement
     [ ] add argument `--show-names`
 
 methods implement
-    [ ] let `print` be function but class instance
+    [✓] let `print` be function but class instance
 
 color_mapping implement
     [✓] given basic mapping at the beginning
@@ -33,6 +33,7 @@ generate data from `README.rst`
 
 docstring (include part of doctest)
     [✓] :func:`color_mapping.defs2map`
+    [✓] :func:`print` :func:`pprint`
     [ ] :mod:`command`
     [ ] `README.rst`
 
