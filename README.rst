@@ -51,7 +51,7 @@ The package provides functions :code:`print` and :code:`pprint` which work like 
 
 .. code:: Python
 
-    >>> from colorprint import print as print, pprint as pprint
+    >>> from colorprint import print, pprint
 
 Member function
 ```````````````````
@@ -83,9 +83,9 @@ You can customize your favorite color and set a color name for convenience.
 
 .. code:: Python
 
-    >>> from colorprint import color_attr_mapping
-    >>> color_attr_mapping['ocean'] = color_attr_mapping['bright'] + (38,5,27)
-    >>> color_attr_mapping['ocean']
+    >>> from colorprint import colormap
+    >>> colormap['ocean'] = colormap['bright'] + (38,5,27)
+    >>> colormap['ocean']
     (1, 38, 5, 27)
     >>> print.ocean('abc', 123)
     [1;38;5;27mabc[m [1;38;5;27m123[m
