@@ -9,11 +9,11 @@ command implement
     [ ] add argument `--show-names`
 
 methods implement
-    [✓] let `print` be function but class instance
+    [✗] let `print` be function but class instance
 
 color_mapping implement
-    [✓] given basic mapping at the beginning
-    [✓] get custom definition when excuting `__getitem__`
+    [✗] given basic mapping at the beginning
+    [✗] get custom definition when excuting `__getitem__`
 
 `README.rst` implement
     [ ] FAQ :cmd:`echo ccc--ooo-----tt | python3.4 -m colorprint  -P "(--)" reverse`
@@ -24,7 +24,7 @@ color_mapping implement
         - stream coloring
 
 man support
-    [✓] show `print` `pprint` as functions
+    [✗] show `print` `pprint` as functions
 
 generate data from `README.rst`
     [ ] `author`/`version`
