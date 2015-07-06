@@ -18,6 +18,10 @@ def colorform(vt_attr):
 
 
 class ColorPrint:
+    """
+    A new print function, which supports color name as attributes.
+    The usage is same as built-in print function.
+    """
     def __init__(self, vt_attr=()):
         self.vt_attr = vt_attr
 
@@ -52,6 +56,10 @@ class ColorPrint:
 
 
 class ColorPprint(ColorPrint):
+    """
+    A new pprint function, which supports color name as attributes.
+    The usage is same as `pprint.pprint` function.
+    """
     def __call__(self, values, stream=None, indent=1, width=80, depth=None, *, compact=False, **kwargs):
         """copy from `pprint.pprint`"""
         class ColoringTextIOWrapper(io.TextIOWrapper):
@@ -115,19 +123,5 @@ class ColorPprint(ColorPrint):
         return printer.pprint(values)
 
 
-def print(*values, **kargs):
-    """
-    A new print function, which supports color name as attributes.
-    The usage is same as built-in print function.
-    """
-    return _print(*values, **kargs)
-print.__dict__ = {name: ColorPrint(colormap[name]) for name in colormap}
-
-
-def pprint(value, **kargs):
-    """
-    A new pprint function, which supports color name as attributes.
-    The usage is same as `pprint.pprint` function.
-    """
-    return _pprint(value, **kargs)
-pprint.__dict__ = {name: ColorPprint(colormap[name]) for name in colormap}
+print = ColorPrint()
+pprint = ColorPprint()
