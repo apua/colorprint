@@ -1,4 +1,4 @@
-from distutils.core import setup
+from distutils.core import setup, Command
 
 import re
 import os
@@ -33,6 +33,22 @@ def get_info_from_readme():
     return result
 
 
+class PyTest(Command):
+    user_options = []
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import subprocess
+        import sys
+        subprocess.call([sys.executable, 'pytest.py', 'README.rst'])
+        #errno = subprocess.call([sys.executable, 'runtests.py'])
+        #raise SystemExit(errno)
+
+
 if __name__=='__main__':
     assert sys.version_info[0]==3
 
@@ -52,9 +68,11 @@ if __name__=='__main__':
         package_dir={'': '.'},
         packages=['colorprint'],
         scripts=['scripts/colorprint'],
-        test_suite='tests',
+        #test_suite='tests',
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Programming Language :: Python :: 3.4',
             ],
+        #test_require=['pytest'], 
+        cmdclass = {'test': PyTest},
         )

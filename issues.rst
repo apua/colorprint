@@ -42,6 +42,8 @@ unittest (in new style)
     [ ] :func:`methods.pprint`
     [ ] :func:`color_mapping.defs2map`
     [ ] :mod:`commad` (undecided)
+    [✓] decide use `py.test` which runs both unittest and doctest easily
+    [✓] support `python setup.py test` with built-in `distutils`
 
 exception
     [ ] review error handler; 自訂顏色的檢查足夠嗎?
