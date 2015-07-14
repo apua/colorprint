@@ -44,7 +44,7 @@ class PyTest(Command):
     def run(self):
         import subprocess
         import sys
-        subprocess.call([sys.executable, 'pytest.py', 'README.rst'])
+        subprocess.call([sys.executable, 'pytest_standalone.py', 'README.rst'])
         #errno = subprocess.call([sys.executable, 'runtests.py'])
         #raise SystemExit(errno)
 
