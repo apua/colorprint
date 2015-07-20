@@ -54,7 +54,7 @@ def defs2map(defs):
     ...     ''')
     True
     """
-    if not defs.strip():
+    if defs is None:
         return {}
 
     form = re.compile('''
