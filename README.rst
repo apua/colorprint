@@ -1,3 +1,5 @@
+*DEPRECATED: please consider https://github.com/jonathanslenders/python-prompt-toolkit*
+
 ================
 VT100-ColorPrint
 ================
@@ -17,11 +19,6 @@ The color print functions and command line tool
     `pi314 <https://github.com/pi314/>`_,
     `su <https://github.com/u1240976/>`_
     (in alphabetical order)
-
-:Downloads:
-    .. image:: https://img.shields.io/pypi/dm/VT100-ColorPrint.svg
-        :target: https://pypi.python.org/pypi/VT100-ColorPrint/
-        :alt: Downloads
 
 
 `VT100-ColorPrint` is a tool for coloring output easily and quickly
